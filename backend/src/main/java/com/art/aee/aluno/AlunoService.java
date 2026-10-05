@@ -2,26 +2,32 @@ package com.art.aee.aluno;
 
 import com.art.aee.aluno.dto.AlunoRequest;
 import com.art.aee.aluno.dto.AlunoResponse;
+import com.art.aee.escola.EscolaRepository;
+import com.art.aee.turma.TurmaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
-    private final TurmaRepository turmaRepository; // Assumindo que este repositório já existe no seu projeto
+    private final TurmaRepository turmaRepository;
+    private final EscolaRepository escolaRepository;
 
-    public AlunoService(AlunoRepository alunoRepository, TurmaRepository turmaRepository) {
+    public AlunoService(
+            AlunoRepository alunoRepository,
+            TurmaRepository turmaRepository,
+            EscolaRepository escolaRepository) {
         this.alunoRepository = alunoRepository;
         this.turmaRepository = turmaRepository;
+        this.escolaRepository = escolaRepository;
     }
 
     @Transactional
@@ -29,72 +35,79 @@ public class AlunoService {
         validarTurma(request.turmaId());
 
         Aluno aluno = new Aluno();
-        copiarDadosDoRequestParaEntidade(request, aluno);
+        copiarDados(request, aluno);
 
-        aluno = alunoRepository.save(aluno);
-        return paraResponse(aluno);
+        return paraResponse(alunoRepository.save(aluno));
     }
 
     @Transactional
     public AlunoResponse atualizar(UUID id, AlunoRequest request) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+        Aluno aluno = buscarEntidade(id);
 
-        // Se a turma foi alterada, validamos se a nova existe
-        if (!aluno.getTurmaId().equals(request.turmaId())) {
+        if (!Objects.equals(aluno.getTurmaId(), request.turmaId())) {
             validarTurma(request.turmaId());
         }
+        copiarDados(request, aluno);
 
-        copiarDadosDoRequestParaEntidade(request, aluno);
-
-        aluno = alunoRepository.save(aluno);
-        return paraResponse(aluno);
+        return paraResponse(alunoRepository.save(aluno));
     }
 
     @Transactional(readOnly = true)
     public AlunoResponse buscarPorId(UUID id) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
-        return paraResponse(aluno);
+        return paraResponse(buscarEntidade(id));
     }
 
     @Transactional(readOnly = true)
     public Page<AlunoResponse> listar(Pageable pageable, UUID escolaId, String nome) {
-        boolean temEscola = escolaId != null;
         boolean temNome = nome != null && !nome.isBlank();
 
-        // Variável para armazenar o resultado da busca (List ou Page)
-        List<Aluno> alunosList;
+        if (escolaId != null) {
+            List<UUID> turmaIds = turmaRepository.findByEscolaId(escolaId).stream()
+                    .map(turma -> turma.getId())
+                    .toList();
 
-        if (temEscola && temNome) {
-            alunosList = alunoRepository.findByTurmaEscolaIdAndNomeContainingIgnoreCase(escolaId, nome, pageable);
-        } else if (temEscola) {
-            alunosList = alunoRepository.findByTurmaEscolaId(escolaId, pageable);
-        } else if (temNome) {
-            alunosList = alunoRepository.findByNomeContainingIgnoreCase(nome, pageable);
-        } else {
-            // Quando não há filtros, usamos o findAll padrão que já retorna Page
-            return alunoRepository.findAll(pageable).map(this::paraResponse);
+            if (turmaIds.isEmpty()) {
+                return Page.empty(pageable);
+            }
+
+            if (temNome) {
+                return alunoRepository
+                        .findByTurmaIdInAndNomeContainingIgnoreCase(turmaIds, nome, pageable)
+                        .map(this::paraResponse);
+            }
+
+            return alunoRepository
+                    .findByTurmaIdIn(turmaIds, pageable)
+                    .map(this::paraResponse);
         }
 
-        // Como os métodos customizados no Repository retornavam List, convertemos para Page e depois mapeamos para DTO
-        List<AlunoResponse> content = alunosList.stream()
-                .map(this::paraResponse)
-                .collect(Collectors.toList());
+        if (temNome) {
+            return alunoRepository
+                    .findByNomeContainingIgnoreCase(nome, pageable)
+                    .map(this::paraResponse);
+        }
 
-        return new PageImpl<>(content, pageable, content.size());
+        return alunoRepository.findAll(pageable).map(this::paraResponse);
     }
 
     @Transactional
     public void desativar(UUID id) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
-
+        Aluno aluno = buscarEntidade(id);
         aluno.setAtivo(false);
         alunoRepository.save(aluno);
     }
 
-    // --- Métodos Privados Auxiliares ---
+    @Transactional
+    public void ativar(UUID id) {
+        Aluno aluno = buscarEntidade(id);
+        aluno.setAtivo(true);
+        alunoRepository.save(aluno);
+    }
+
+    private Aluno buscarEntidade(UUID id) {
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+    }
 
     private void validarTurma(UUID turmaId) {
         if (!turmaRepository.existsById(turmaId)) {
@@ -102,7 +115,7 @@ public class AlunoService {
         }
     }
 
-    private void copiarDadosDoRequestParaEntidade(AlunoRequest request, Aluno aluno) {
+    private void copiarDados(AlunoRequest request, Aluno aluno) {
         aluno.setNome(request.nome());
         aluno.setDataNascimento(request.dataNascimento());
         aluno.setDiagnostico(request.diagnostico());
@@ -115,18 +128,19 @@ public class AlunoService {
     }
 
     private AlunoResponse paraResponse(Aluno aluno) {
-        String nomeTurma = "Turma não encontrada";
-        String nomeEscola = "Escola não encontrada";
+        String nomeTurma = null;
+        String nomeEscola = null;
 
-        // Busca a turma para extrair o nome dela e da escola
         if (aluno.getTurmaId() != null) {
-            var turmaOpt = turmaRepository.findById(aluno.getTurmaId());
-            if (turmaOpt.isPresent()) {
-                var turma = turmaOpt.get();
-                // Assumindo os getters básicos das suas classes Turma e Escola
+            var turma = turmaRepository.findById(aluno.getTurmaId()).orElse(null);
+
+            if (turma != null) {
                 nomeTurma = turma.getNome();
-                if (turma.getEscola() != null) {
-                    nomeEscola = turma.getEscola().getNome();
+
+                if (turma.getEscolaId() != null) {
+                    nomeEscola = escolaRepository.findById(turma.getEscolaId())
+                            .map(escola -> escola.getNome())
+                            .orElse(null);
                 }
             }
         }
