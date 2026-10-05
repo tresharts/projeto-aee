@@ -3,8 +3,10 @@ package com.art.aee.aluno;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
@@ -13,9 +15,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "alunos")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class Aluno {
 
     @Id
@@ -28,7 +32,7 @@ public class Aluno {
     private String nome;
 
     @NotNull(message = "A data de nascimento é obrigatória")
-    @PastOrPresent(message = "A data de nascimento não pode ser uma data futura")
+    @Past(message = "A data de nascimento não pode ser uma data futura")
     @Column(nullable = false)
     private LocalDate dataNascimento;
 
@@ -49,6 +53,7 @@ public class Aluno {
     private String telefone;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean ativo = true;
 
     @CreationTimestamp
