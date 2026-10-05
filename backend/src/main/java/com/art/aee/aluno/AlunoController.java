@@ -68,4 +68,11 @@ public class AlunoController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable UUID id) {
+        alunoService.ativar(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
