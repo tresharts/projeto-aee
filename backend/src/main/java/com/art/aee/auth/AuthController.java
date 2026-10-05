@@ -1,6 +1,5 @@
 package com.art.aee.auth;
 
-import com.art.aee.professor.Professor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
