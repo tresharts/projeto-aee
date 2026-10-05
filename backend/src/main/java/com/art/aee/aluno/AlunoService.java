@@ -2,7 +2,6 @@ package com.art.aee.aluno;
 
 import com.art.aee.aluno.dto.AlunoRequest;
 import com.art.aee.aluno.dto.AlunoResponse;
-import com.art.aee.escola.EscolaRepository;
 import com.art.aee.turma.TurmaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -19,15 +18,15 @@ public class AlunoService {
 
     private final AlunoRepository alunoRepository;
     private final TurmaRepository turmaRepository;
-    private final EscolaRepository escolaRepository;
+    private final AlunoMapper alunoMapper;
 
     public AlunoService(
             AlunoRepository alunoRepository,
             TurmaRepository turmaRepository,
-            EscolaRepository escolaRepository) {
+            AlunoMapper alunoMapper) {
         this.alunoRepository = alunoRepository;
         this.turmaRepository = turmaRepository;
-        this.escolaRepository = escolaRepository;
+        this.alunoMapper = alunoMapper;
     }
 
     @Transactional
@@ -35,9 +34,9 @@ public class AlunoService {
         validarTurma(request.turmaId());
 
         Aluno aluno = new Aluno();
-        copiarDados(request, aluno);
+        alunoMapper.copiarDados(request, aluno);
 
-        return paraResponse(alunoRepository.save(aluno));
+        return alunoMapper.paraResponse(alunoRepository.save(aluno));
     }
 
     @Transactional
@@ -47,14 +46,14 @@ public class AlunoService {
         if (!Objects.equals(aluno.getTurmaId(), request.turmaId())) {
             validarTurma(request.turmaId());
         }
-        copiarDados(request, aluno);
+        alunoMapper.copiarDados(request, aluno);
 
-        return paraResponse(alunoRepository.save(aluno));
+        return alunoMapper.paraResponse(alunoRepository.save(aluno));
     }
 
     @Transactional(readOnly = true)
     public AlunoResponse buscarPorId(UUID id) {
-        return paraResponse(buscarEntidade(id));
+        return alunoMapper.paraResponse(buscarEntidade(id));
     }
 
     @Transactional(readOnly = true)
@@ -73,21 +72,21 @@ public class AlunoService {
             if (temNome) {
                 return alunoRepository
                         .findByTurmaIdInAndNomeContainingIgnoreCase(turmaIds, nome, pageable)
-                        .map(this::paraResponse);
+                        .map(alunoMapper::paraResponse);
             }
 
             return alunoRepository
                     .findByTurmaIdIn(turmaIds, pageable)
-                    .map(this::paraResponse);
+                    .map(alunoMapper::paraResponse);
         }
 
         if (temNome) {
             return alunoRepository
                     .findByNomeContainingIgnoreCase(nome, pageable)
-                    .map(this::paraResponse);
+                    .map(alunoMapper::paraResponse);
         }
 
-        return alunoRepository.findAll(pageable).map(this::paraResponse);
+        return alunoRepository.findAll(pageable).map(alunoMapper::paraResponse);
     }
 
     @Transactional
@@ -113,53 +112,5 @@ public class AlunoService {
         if (!turmaRepository.existsById(turmaId)) {
             throw new EntityNotFoundException("Turma não encontrada");
         }
-    }
-
-    private void copiarDados(AlunoRequest request, Aluno aluno) {
-        aluno.setNome(request.nome());
-        aluno.setDataNascimento(request.dataNascimento());
-        aluno.setDiagnostico(request.diagnostico());
-        aluno.setFotoUrl(request.fotoUrl());
-        aluno.setInformacoesFamilia(request.informacoesFamilia());
-        aluno.setContatosEmergencia(request.contatosEmergencia());
-        aluno.setEmail(request.email());
-        aluno.setTelefone(request.telefone());
-        aluno.setTurmaId(request.turmaId());
-    }
-
-    private AlunoResponse paraResponse(Aluno aluno) {
-        String nomeTurma = null;
-        String nomeEscola = null;
-
-        if (aluno.getTurmaId() != null) {
-            var turma = turmaRepository.findById(aluno.getTurmaId()).orElse(null);
-
-            if (turma != null) {
-                nomeTurma = turma.getNome();
-
-                if (turma.getEscolaId() != null) {
-                    nomeEscola = escolaRepository.findById(turma.getEscolaId())
-                            .map(escola -> escola.getNome())
-                            .orElse(null);
-                }
-            }
-        }
-
-        return new AlunoResponse(
-                aluno.getId(),
-                aluno.getNome(),
-                aluno.getDataNascimento(),
-                aluno.getDiagnostico(),
-                aluno.getFotoUrl(),
-                aluno.getInformacoesFamilia(),
-                aluno.getContatosEmergencia(),
-                aluno.getEmail(),
-                aluno.getTelefone(),
-                aluno.isAtivo(),
-                aluno.getDataCadastro(),
-                aluno.getTurmaId(),
-                nomeTurma,
-                nomeEscola
-        );
     }
 }
