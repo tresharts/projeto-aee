@@ -13,9 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "alunos")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class Aluno {
 
     @Id
