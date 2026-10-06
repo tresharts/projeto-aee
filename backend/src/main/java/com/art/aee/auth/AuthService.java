@@ -84,7 +84,6 @@ public class AuthService {
             throw new RuntimeException("Refresh token expirado");
         }
 
-        // Rotação: remove o token antigo e gera um novo
         refreshTokenRepository.delete(token);
         RefreshToken newToken = tokenService.generateRefreshToken(token.getProfessor());
         refreshTokenRepository.save(newToken);
