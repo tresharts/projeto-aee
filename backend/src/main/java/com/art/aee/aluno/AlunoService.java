@@ -3,7 +3,7 @@ package com.art.aee.aluno;
 import com.art.aee.aluno.dto.AlunoRequest;
 import com.art.aee.aluno.dto.AlunoResponse;
 import com.art.aee.turma.TurmaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.art.aee.exception.RecursoNaoEncontradoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -105,12 +105,12 @@ public class AlunoService {
 
     private Aluno buscarEntidade(UUID id) {
         return alunoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Aluno não encontrado"));
     }
 
     private void validarTurma(UUID turmaId) {
         if (!turmaRepository.existsById(turmaId)) {
-            throw new EntityNotFoundException("Turma não encontrada");
+            throw new RecursoNaoEncontradoException("Turma não encontrada");
         }
     }
 }

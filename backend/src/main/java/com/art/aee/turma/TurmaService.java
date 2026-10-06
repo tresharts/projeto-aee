@@ -4,7 +4,8 @@ import com.art.aee.aluno.AlunoRepository;
 import com.art.aee.escola.EscolaRepository;
 import com.art.aee.turma.dto.TurmaRequest;
 import com.art.aee.turma.dto.TurmaResponse;
-import jakarta.persistence.EntityNotFoundException;
+import com.art.aee.exception.ConflitoException;
+import com.art.aee.exception.RecursoNaoEncontradoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -85,7 +86,7 @@ public class TurmaService {
         Turma turma = buscarEntidade(id);
 
         if (alunoRepository.existsByTurmaId(id)) {
-            throw new IllegalStateException("Não é possível remover turma com alunos vinculados");
+            throw new ConflitoException("Não é possível remover turma com alunos vinculados");
         }
 
         turmaRepository.delete(turma);
@@ -93,12 +94,12 @@ public class TurmaService {
 
     private Turma buscarEntidade(UUID id) {
         return turmaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada"));
     }
 
     private void validarEscola(UUID escolaId) {
         if (!escolaRepository.existsById(escolaId)) {
-            throw new EntityNotFoundException("Escola não encontrada");
+            throw new RecursoNaoEncontradoException("Escola não encontrada");
         }
     }
 }
