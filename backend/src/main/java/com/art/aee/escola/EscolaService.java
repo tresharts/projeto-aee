@@ -2,7 +2,9 @@ package com.art.aee.escola;
 
 import com.art.aee.escola.dto.EscolaRequest;
 import com.art.aee.escola.dto.EscolaResponse;
-import jakarta.persistence.EntityNotFoundException;
+import com.art.aee.exception.ConflitoException;
+import com.art.aee.exception.RecursoNaoEncontradoException;
+import com.art.aee.turma.TurmaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,15 @@ import java.util.UUID;
 public class EscolaService {
 
     private final EscolaRepository escolaRepository;
+    private final TurmaRepository turmaRepository;
     private final EscolaMapper escolaMapper;
 
-    public EscolaService(EscolaRepository escolaRepository, EscolaMapper escolaMapper) {
+    public EscolaService(
+            EscolaRepository escolaRepository,
+            TurmaRepository turmaRepository,
+            EscolaMapper escolaMapper) {
         this.escolaRepository = escolaRepository;
+        this.turmaRepository = turmaRepository;
         this.escolaMapper = escolaMapper;
     }
 
@@ -56,11 +63,16 @@ public class EscolaService {
     @Transactional
     public void remover(UUID id) {
         Escola escola = buscarEntidade(id);
+
+        if (turmaRepository.existsByEscolaId(id)) {
+            throw new ConflitoException("Não é possível remover escola com turmas vinculadas");
+        }
+
         escolaRepository.delete(escola);
     }
 
     private Escola buscarEntidade(UUID id) {
         return escolaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Escola não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Escola não encontrada"));
     }
 }

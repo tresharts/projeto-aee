@@ -11,6 +11,7 @@ public interface TurmaRepository extends JpaRepository<Turma, UUID> {
 
     List<Turma> findByEscolaId(UUID escolaId);
 
+    boolean existsByEscolaId(UUID escolaId);
     Page<Turma> findByEscolaId(UUID escolaId, Pageable pageable);
 
     Page<Turma> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
