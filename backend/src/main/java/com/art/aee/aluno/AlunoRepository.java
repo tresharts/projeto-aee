@@ -14,6 +14,8 @@ public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
 
     Optional<Aluno> findByIdAndAtivoTrue(UUID id);
 
+    boolean existsByTurmaId(UUID turmaId);
+
     Page<Aluno> findByTurmaId(UUID turmaId, Pageable pageable);
 
     Page<Aluno> findByTurmaIdAndNomeContainingIgnoreCase(UUID turmaId, String nome, Pageable pageable);
