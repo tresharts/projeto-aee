@@ -1,0 +1,15 @@
+package com.art.aee.atendimento;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public interface AtendimentoRepository extends JpaRepository<Atendimento, UUID> {
+
+    Page<Atendimento> findByAlunoId(UUID alunoId, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdAndDataHoraBetween(UUID alunoId, LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+}
