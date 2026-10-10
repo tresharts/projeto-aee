@@ -12,4 +12,14 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, UUID> 
     Page<Atendimento> findByAlunoId(UUID alunoId, Pageable pageable);
 
     Page<Atendimento> findByAlunoIdAndDataHoraBetween(UUID alunoId, LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdAndDataHoraGreaterThanEqual(UUID alunoId, LocalDateTime inicio, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdAndDataHoraLessThanEqual(UUID alunoId, LocalDateTime fim, Pageable pageable);
+
+    Page<Atendimento> findByDataHoraBetween(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+
+    Page<Atendimento> findByDataHoraGreaterThanEqual(LocalDateTime inicio, Pageable pageable);
+
+    Page<Atendimento> findByDataHoraLessThanEqual(LocalDateTime fim, Pageable pageable);
 }
