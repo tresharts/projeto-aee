@@ -55,6 +55,11 @@ public class GlobalExceptionHandler {
         return resposta(HttpStatus.METHOD_NOT_ALLOWED, "Método não suportado");
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroResponse> handleArgumentoInvalido(IllegalArgumentException e) {
+        return resposta(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGenerico(Exception e) {
         return resposta(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor");
