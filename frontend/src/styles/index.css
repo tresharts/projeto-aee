@@ -45,7 +45,7 @@ input:focus-visible {
   display: grid;
   grid-template-columns: 314px minmax(0, 1fr);
   width: 100%;
-  min-height: 1046px;
+  min-height: 100vh;
   background: linear-gradient(
     90deg,
     #f6f7ff 0 21.3%,
@@ -57,7 +57,7 @@ input:focus-visible {
 .sidebar {
   position: relative;
   display: flex;
-  height: 1046px;
+  height: 100vh;
   flex-direction: column;
   align-items: center;
   overflow: hidden;
@@ -207,7 +207,8 @@ input:focus-visible {
 .dashboard-search {
   position: relative;
   display: flex;
-  width: 503px;
+  max-width: 503px;
+  width: 100%;
   height: 45px;
   align-items: center;
   gap: 16px;
@@ -420,7 +421,6 @@ input:focus-visible {
 
 .dashboard-surface {
   position: relative;
-  min-height: 925px;
   margin-top: 18px;
   padding: 20px 27px 56px 30px;
   border-radius: 49px;
@@ -557,7 +557,7 @@ input:focus-visible {
 .metric-heading h2 {
   margin: 0;
   color: #8996bd;
-  font-size: 11.8px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.24;
   white-space: nowrap;
@@ -616,7 +616,7 @@ input:focus-visible {
 .metric-description {
   margin: 0;
   color: #7784ad;
-  font-size: 10.8px;
+  font-size: 12px;
   line-height: 1.3;
   text-align: center;
 }
@@ -662,6 +662,13 @@ input:focus-visible {
   align-items: start;
 }
 
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 .agenda-panel,
 .alerts-panel,
 .school-returns-panel,
@@ -671,7 +678,6 @@ input:focus-visible {
 }
 
 .agenda-panel {
-  height: 583px;
   overflow: hidden;
   padding: 18px 0 20px;
   border-radius: 49px;
@@ -882,7 +888,6 @@ input:focus-visible {
 }
 
 .alerts-panel {
-  height: 207px;
   overflow: hidden;
   padding-top: 13px;
   border-radius: 49px;
@@ -988,7 +993,7 @@ input:focus-visible {
   gap: 5px;
   margin: 0;
   color: #59669a;
-  font-size: 9.2px;
+  font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -1042,7 +1047,7 @@ input:focus-visible {
 .return-author strong {
   display: inline-block;
   color: #66636b;
-  font-size: 10.5px;
+  font-size: 12px;
 }
 
 .return-author small {
@@ -1057,7 +1062,7 @@ input:focus-visible {
   overflow: hidden;
   margin: 3px 0 1px;
   color: #565e70;
-  font-size: 8.1px;
+  font-size: 12px;
   line-height: 1.18;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -1084,7 +1089,6 @@ input:focus-visible {
 }
 
 .pedagogical-panel {
-  height: 415px;
   overflow: hidden;
   padding: 13px 12px 16px;
   border-radius: 49px;
@@ -1167,14 +1171,14 @@ input:focus-visible {
   border-radius: 25px;
   background: #dceefe;
   color: #697a9e;
-  font-size: 7.2px;
+  font-size: 12px;
   line-height: 1.1;
 }
 
 .indicator-kpis strong {
   margin-top: 2px;
   color: #556688;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .indicator-kpis small {
@@ -1198,7 +1202,7 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   color: #58739f;
-  font-size: 5.9px;
+  font-size: 12px;
   line-height: 1.1;
   text-align: center;
 }
@@ -1227,12 +1231,12 @@ input:focus-visible {
 .frequency-title {
   margin: 13px 5px 5px;
   color: #5b669a;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .frequency-title span {
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 400;
 }
 
@@ -1274,13 +1278,12 @@ input:focus-visible {
   position: absolute;
   bottom: 3px;
   color: #697ba2;
-  font-size: 6px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .motivation-card {
   position: relative;
-  height: 127px;
   overflow: hidden;
   padding: 15px 9px 12px 24px;
   border-radius: 49px 49px 6px 49px;

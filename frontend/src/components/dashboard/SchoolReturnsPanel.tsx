@@ -1,4 +1,4 @@
-import { MessageSquareText } from 'lucide-react'
+import { Clock3, MessageSquareText } from 'lucide-react'
 import type {
   IntegrationState,
   SchoolReturn,
@@ -32,6 +32,12 @@ export function SchoolReturnsPanel({
       </div>
       {state === 'pending' ? (
         <IntegrationPlaceholder compact />
+      ) : returns.length === 0 ? (
+        <div className="integration-placeholder compact">
+          <Clock3 aria-hidden="true" />
+          <strong>Sem retornos de escolas</strong>
+          <span>Não há retornos para exibir no momento.</span>
+        </div>
       ) : (
         <div className="school-return-list">
           {returns.map((item) => (
