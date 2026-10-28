@@ -2395,3 +2395,28 @@ input:focus-visible {
     height: 1046px;
   }
 }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  background: #5b649f;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #4a5282;
+}
+
+.btn-primary:disabled {
+  background: #9aa3b8;
+  cursor: not-allowed;
+}

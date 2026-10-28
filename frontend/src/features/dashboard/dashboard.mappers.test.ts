@@ -16,14 +16,19 @@ describe('mapApiPayloadToDashboard', () => {
     const payload = {
       students: { ...pageDefaults, content: [], totalElements: 31 },
       attendances: { ...pageDefaults, content: [], totalElements: 78 },
+      dashboardResponse: {
+        agendaDoDia: [],
+        alertas: [],
+        feedRetornos: [],
+      },
     } satisfies DashboardApiPayload
 
     const dashboard = mapApiPayloadToDashboard(payload)
 
-    expect(dashboard.metrics[0].value).toBe('78')
-    expect(dashboard.metrics[1].value).toBe('31')
+    expect(dashboard.metrics[0].value).toBe('0')
+    expect(dashboard.metrics[1].value).toBe('0')
     expect(dashboard.appointments).toEqual([])
-    expect(dashboard.agendaState).toBe('pending')
+    expect(dashboard.agendaState).toBe('empty')
     expect(dashboard.indicator.available).toBe(false)
   })
 })

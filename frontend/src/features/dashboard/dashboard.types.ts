@@ -106,7 +106,41 @@ export interface SpringPage<T> {
   empty: boolean
 }
 
+export interface DashboardResponse {
+  agendaDoDia: AtendimentoHoje[]
+  alertas: AlertaAutomatico[]
+  feedRetornos: RetornoEscola[]
+}
+
+export interface AtendimentoHoje {
+  alunoId: string
+  nomeAluno: string
+  nomeTurma: string
+  nomeEscola: string
+  dataHora: string
+  presente: boolean
+  humor: string | null
+  foco: string | null
+}
+
+export interface AlertaAutomatico {
+  id: string
+  tipo: string
+  mensagem: string
+  severidade: string
+}
+
+export interface RetornoEscola {
+  id: string
+  nomeProfessorEscola: string
+  escola: string
+  mensagem: string
+  dataEnvio: string
+  alunoId: string | null
+}
+
 export interface DashboardApiPayload {
   students: SpringPage<ApiStudent>
   attendances: SpringPage<ApiAttendance>
+  dashboardResponse: DashboardResponse
 }

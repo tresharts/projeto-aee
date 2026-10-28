@@ -17,6 +17,7 @@ import {
 import { formatDashboardDate } from '../../lib/date'
 import { dashboardDemoData } from './dashboard.mock'
 import { searchStudentsByName } from './dashboard.service'
+import type { ApiStudent } from './dashboard.types'
 import { useDashboardData } from './useDashboardData'
 
 export function DashboardPage() {
@@ -58,7 +59,7 @@ export function DashboardPage() {
         .then((page) => {
           if (!active) return
           setSearchResults(
-            page.content.map((student) => ({
+            page.content.map((student: ApiStudent) => ({
               id: student.id,
               name: student.nome,
               detail: `${student.nomeEscola} • ${student.nomeTurma}`,
