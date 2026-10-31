@@ -1,5 +1,7 @@
 import { Bell, ChevronUp, Search } from 'lucide-react'
 import { AvatarBadge } from '../dashboard/AvatarBadge'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 
 export interface SearchResult {
   id: string
@@ -34,9 +36,10 @@ export function TopBar({
         <label className="sr-only" htmlFor="dashboard-search-input">
           Buscar aluno, RA, escola ou qualquer informação
         </label>
-        <input
+        <Input
           id="dashboard-search-input"
           type="search"
+          className="dashboard-search-input"
           value={query}
           placeholder="Buscar aluno, RA, escola ou qualquer informação"
           autoComplete="off"
@@ -48,7 +51,9 @@ export function TopBar({
               <p>Buscando…</p>
             ) : results.length > 0 ? (
               results.map((result) => (
-                <button
+                <Button
+                  variant="ghost"
+                  className="search-result-option"
                   type="button"
                   role="option"
                   aria-selected="false"
@@ -57,7 +62,7 @@ export function TopBar({
                 >
                   <strong>{result.name}</strong>
                   <span>{result.detail}</span>
-                </button>
+                </Button>
               ))
             ) : (
               <p>Nenhum aluno encontrado.</p>
@@ -66,7 +71,9 @@ export function TopBar({
         )}
       </div>
       <div className="topbar-actions">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           className="notification-button"
           type="button"
           aria-label="Notificações — em breve"
@@ -74,8 +81,10 @@ export function TopBar({
         >
           <Bell aria-hidden="true" />
           <span />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="default"
           className="profile-button"
           type="button"
           aria-label="Perfil da professora — em breve"
@@ -87,7 +96,7 @@ export function TopBar({
             <small>Professora AEE</small>
           </span>
           <ChevronUp className="profile-chevron" aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </header>
   )

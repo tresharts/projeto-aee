@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import type { SVGProps } from 'react'
 import { SidebarBloom } from '../illustrations/DecorativeBlooms'
+import { Button } from '../ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
@@ -33,8 +34,10 @@ export function Sidebar({ onUnavailable }: SidebarProps) {
         {navigation.map((item) => {
           const Icon = item.icon
           return (
-            <button
-              className={`${item.active ? 'active' : ''} ${item.multiline ? 'multiline' : ''}`}
+            <Button
+              variant="ghost"
+              size="default"
+              className={`justify-start ${item.active ? 'active' : ''} ${item.multiline ? 'multiline' : ''}`}
               key={item.label}
               type="button"
               aria-current={item.active ? 'page' : undefined}
@@ -47,15 +50,10 @@ export function Sidebar({ onUnavailable }: SidebarProps) {
               </span>
               <span className="sidebar-label">{item.label}</span>
               {!item.active && <span className="sr-only">Em breve</span>}
-            </button>
+            </Button>
           )
         })}
       </nav>
-      <p className="sidebar-message">
-        Mais inclusão
-        <br />
-        Mais possibilidades
-      </p>
       <div className="sidebar-art" aria-hidden="true">
         <SidebarBloom />
       </div>

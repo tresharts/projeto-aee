@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Button } from '../components/ui/button'
+import { Card } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -29,7 +33,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-sm p-8 w-full max-w-md">
+      <Card className="w-full max-w-md border-0 bg-white p-8 shadow-sm">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">Entrar no AEE</h1>
         {erro && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
@@ -38,8 +42,14 @@ export function LoginPage() {
         )}
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">E-mail</label>
-            <input
+            <Label
+              htmlFor="login-email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              E-mail
+            </Label>
+            <Input
+              id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -48,8 +58,14 @@ export function LoginPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Senha</label>
-            <input
+            <Label
+              htmlFor="login-password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Senha
+            </Label>
+            <Input
+              id="login-password"
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
@@ -57,14 +73,15 @@ export function LoginPage() {
               className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <button
+          <Button
+            variant="brand"
             type="submit"
-            className="w-full btn-primary py-2"
+            className="w-full"
           >
             Entrar
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   )
 }

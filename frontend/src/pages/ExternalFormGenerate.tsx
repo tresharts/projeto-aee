@@ -1,6 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from '../lib/api'
 import { gerarLink } from '../lib/external-form.service'
+import { Button } from '../components/ui/button'
+import { Card } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select'
 
 const PERGUNTAS_FIXAS = [
   'Como foi a interação da criança esta semana?',
@@ -56,7 +67,7 @@ export function ExternalFormGenerate() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <Card className="border-0 bg-white p-6 shadow-sm">
           <h1 className="text-lg font-semibold text-gray-900 mb-6">
             Gerar Link Seguro
           </h1>
@@ -69,28 +80,37 @@ export function ExternalFormGenerate() {
 
           <form onSubmit={handleGerarLink} className="space-y-4">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Selecionar aluno
-              </label>
-              <select
-                value={alunoSelecionado || ''}
-                onChange={(e) => setAlunoSelecionado(e.target.value)}
-                disabled={gerando}
-                className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500"
+              <Label
+                htmlFor="external-form-student"
+                className="block text-sm font-medium text-gray-700"
               >
-                <option value="">Escolha um aluno</option>
-                {alunos.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.nome}
-                  </option>
-                ))}
-              </select>
+                Selecionar aluno
+              </Label>
+              <Select
+                value={alunoSelecionado || ''}
+                onValueChange={setAlunoSelecionado}
+                disabled={gerando}
+              >
+                <SelectTrigger
+                  id="external-form-student"
+                  className="w-full border-gray-300"
+                >
+                  <SelectValue placeholder="Escolha um aluno" />
+                </SelectTrigger>
+                <SelectContent>
+                  {alunos.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <p className="block text-sm font-medium text-gray-700">
                 Perguntas (fixas)
-              </label>
+              </p>
               <ul className="text-sm text-gray-600 space-y-1">
                 {PERGUNTAS_FIXAS.map((p, i) => (
                   <li key={i} className="flex items-center gap-2">
@@ -101,13 +121,14 @@ export function ExternalFormGenerate() {
               </ul>
             </div>
 
-            <button
+            <Button
+              variant="brand"
               type="submit"
               disabled={gerando || !alunoSelecionado}
-              className="w-full btn-primary disabled:opacity-50 disabled:pointer-events-none py-3"
+              className="w-full disabled:pointer-events-none"
             >
               {gerando ? 'Gerando...' : 'Gerar link seguro'}
-            </button>
+            </Button>
           </form>
 
           {linkGerado && (
@@ -116,25 +137,27 @@ export function ExternalFormGenerate() {
                 Link gerado com sucesso
               </h3>
               <div className="flex gap-2">
-                <input
+                <Input
                   type="text"
                   value={linkGerado}
                   readOnly
                   className="flex-1 border border-gray-300 rounded-md p-2 text-sm bg-white"
                 />
-                <button
+                <Button
+                  variant="brand"
+                  type="button"
                   onClick={handleCopiar}
-                  className="btn-primary py-2 px-4 text-xs"
+                  className="text-xs"
                 >
                   Copiar
-                </button>
+                </Button>
               </div>
               <p className="mt-3 text-sm text-gray-600">
                 Envie este link pelo WhatsApp do professor da escola regular
               </p>
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   )

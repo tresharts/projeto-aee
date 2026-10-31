@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { submeterRespostas, verificarToken } from '../../lib/external-form.service'
+import { Button } from '../ui/button'
+import { Card } from '../ui/card'
+import { Label } from '../ui/label'
+import { Textarea } from '../ui/textarea'
 
 const PERGUNTAS = [
   'Como foi a interação da criança esta semana?',
@@ -59,7 +63,7 @@ export function ExternalForm() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <Card className="border-0 bg-white p-6 shadow-sm">
           <h1 className="text-lg font-semibold text-gray-900 mb-6">
             {valido === false ? 'Link Inválido' : 'Pesquisa da Escola Regular'}
           </h1>
@@ -74,10 +78,14 @@ export function ExternalForm() {
             <form onSubmit={handleEnviar} className="space-y-4">
               {PERGUNTAS.map((pergunta, index) => (
                 <div key={index} className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor={`external-response-${index}`}
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     {pergunta}
-                  </label>
-                  <textarea
+                  </Label>
+                  <Textarea
+                    id={`external-response-${index}`}
                     value={respostas[index] || ''}
                     onChange={(e) => handleRespostaChange(index, e.target.value)}
                     rows={3}
@@ -86,13 +94,14 @@ export function ExternalForm() {
                   />
                 </div>
               ))}
-              <button
+              <Button
+                variant="brand"
                 type="submit"
                 disabled={enviando}
-                className="w-full btn-primary disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full disabled:pointer-events-none"
               >
                 {enviando ? 'Enviando...' : 'Enviar respostas'}
-              </button>
+              </Button>
             </form>
           )}
 
@@ -109,7 +118,7 @@ export function ExternalForm() {
               </p>
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   )

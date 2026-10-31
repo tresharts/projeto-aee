@@ -1,4 +1,5 @@
 import { LoaderCircle, LockKeyhole, RefreshCw, WifiOff } from 'lucide-react'
+import { Button } from '../ui/button'
 
 interface DashboardStateProps {
   status: 'loading' | 'error' | 'unauthorized'
@@ -34,9 +35,9 @@ export function DashboardState({
           'Aguarde enquanto buscamos os dados disponíveis no backend do AEE Conecta.'}
       </p>
       {status !== 'loading' && (
-        <button type="button" onClick={onRetry}>
+        <Button type="button" onClick={onRetry}>
           <RefreshCw aria-hidden="true" /> Tentar novamente
-        </button>
+        </Button>
       )}
     </section>
   )

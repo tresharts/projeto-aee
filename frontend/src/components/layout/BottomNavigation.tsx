@@ -1,4 +1,5 @@
 import { CalendarDays, House, Menu, UsersRound } from 'lucide-react'
+import { Button } from '../ui/button'
 
 interface BottomNavigationProps {
   onUnavailable: (feature: string) => void
@@ -17,7 +18,9 @@ export function BottomNavigation({ onUnavailable }: BottomNavigationProps) {
       {items.map((item) => {
         const Icon = item.icon
         return (
-          <button
+          <Button
+            variant="ghost"
+            size="default"
             className={item.active ? 'selected' : ''}
             type="button"
             key={item.label}
@@ -29,7 +32,7 @@ export function BottomNavigation({ onUnavailable }: BottomNavigationProps) {
               <Icon aria-hidden="true" />
             </span>
             {item.label}
-          </button>
+          </Button>
         )
       })}
     </nav>
