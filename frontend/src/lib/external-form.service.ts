@@ -1,4 +1,4 @@
-import { apiFetch } from '../lib/api'
+import { apiFetch } from '@/lib/api'
 
 export async function submeterRespostas(token: string, respostas: string[]) {
   return apiFetch(`/api/external-form/${token}/submit`, {

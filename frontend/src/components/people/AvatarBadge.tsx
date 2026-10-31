@@ -1,13 +1,14 @@
 import { useId } from 'react'
-import type { Appointment } from '../../features/dashboard/dashboard.types'
 import {
   AVATAR_PROFILES,
   FALLBACK_AVATAR_PROFILE,
 } from './avatarProfiles'
 
+type AvatarTone = 'blue' | 'yellow' | 'orange' | 'pink' | 'green'
+
 interface AvatarBadgeProps {
   name: string
-  tone?: Appointment['avatarTone']
+  tone?: AvatarTone
   size?: 'sm' | 'md' | 'lg'
 }
 

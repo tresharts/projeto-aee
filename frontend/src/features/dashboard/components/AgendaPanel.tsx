@@ -1,13 +1,13 @@
 import { CalendarDays, Pause, Play } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Button } from '../ui/button'
-import { getDayPeriod } from '../../lib/date'
+import { Button } from '@/components/ui/button'
+import { getDayPeriod } from '@/lib/date'
 import type {
   Appointment,
   DayPeriod,
   IntegrationState,
-} from '../../features/dashboard/dashboard.types'
-import { AvatarBadge } from './AvatarBadge'
+} from '../dashboard.types'
+import { AvatarBadge } from '@/components/people/AvatarBadge'
 import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 
 interface AgendaPanelProps {

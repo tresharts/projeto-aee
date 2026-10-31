@@ -2,7 +2,7 @@ import { BarChart3, CircleDot, Target, UsersRound } from 'lucide-react'
 import type {
   IntegrationState,
   PedagogicalIndicator,
-} from '../../features/dashboard/dashboard.types'
+} from '../dashboard.types'
 import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 
 interface PedagogicalPanelProps {

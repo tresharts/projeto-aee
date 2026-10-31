@@ -6,8 +6,8 @@ import {
   UsersRound,
 } from 'lucide-react'
 import type { SVGProps } from 'react'
-import { SidebarBloom } from '../illustrations/DecorativeBlooms'
-import { Button } from '../ui/button'
+import { SidebarBloom } from '@/components/illustrations/DecorativeBlooms'
+import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void

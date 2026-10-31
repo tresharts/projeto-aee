@@ -1,5 +1,5 @@
 import { CalendarDays, House, Menu, UsersRound } from 'lucide-react'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 
 interface BottomNavigationProps {
   onUnavailable: (feature: string) => void

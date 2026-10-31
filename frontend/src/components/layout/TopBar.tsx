@@ -1,7 +1,7 @@
 import { Bell, ChevronUp, Search } from 'lucide-react'
-import { AvatarBadge } from '../dashboard/AvatarBadge'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+import { AvatarBadge } from '@/components/people/AvatarBadge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export interface SearchResult {
   id: string

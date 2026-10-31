@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { submeterRespostas, verificarToken } from '../../lib/external-form.service'
-import { Button } from '../ui/button'
-import { Card } from '../ui/card'
-import { Label } from '../ui/label'
-import { Textarea } from '../ui/textarea'
+import { submeterRespostas, verificarToken } from '@/lib/external-form.service'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 const PERGUNTAS = [
   'Como foi a interação da criança esta semana?',

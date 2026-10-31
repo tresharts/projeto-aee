@@ -2,10 +2,10 @@ import { CalendarDays, Clock3, MessageSquareText } from 'lucide-react'
 import type {
   IntegrationState,
   SchoolReturn,
-} from '../../features/dashboard/dashboard.types'
-import { Button } from '../ui/button'
-import { formatShortDate } from '../../lib/date'
-import { AvatarBadge } from './AvatarBadge'
+} from '../dashboard.types'
+import { Button } from '@/components/ui/button'
+import { formatShortDate } from '@/lib/date'
+import { AvatarBadge } from '@/components/people/AvatarBadge'
 import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 
 interface SchoolReturnsPanelProps {

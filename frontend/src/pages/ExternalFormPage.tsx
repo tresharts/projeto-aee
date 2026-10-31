@@ -1,4 +1,4 @@
-import { ExternalForm } from '../components/external-form/ExternalForm'
+import { ExternalForm } from '@/components/external-form/ExternalForm'
 
 export function ExternalFormPage() {
   return <ExternalForm />

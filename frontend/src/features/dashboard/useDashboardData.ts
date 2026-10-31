@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ApiError } from '../../lib/api'
+import { ApiError } from '@/lib/api'
 import { mapApiPayloadToDashboard } from './dashboard.mappers'
 import { dashboardDemoData } from './dashboard.mock'
 import { getDashboardApiPayload } from './dashboard.service'

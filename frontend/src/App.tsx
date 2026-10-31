@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { DashboardPage } from './features/dashboard/DashboardPage'
-import { ExternalFormPage } from './pages/ExternalFormPage'
-import { ExternalFormGenerate } from './pages/ExternalFormGenerate'
-import { LoginPage } from './pages/LoginPage'
+import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { ExternalFormPage } from '@/pages/ExternalFormPage'
+import { ExternalFormGenerate } from '@/pages/ExternalFormGenerate'
+import { LoginPage } from '@/pages/LoginPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('accessToken')

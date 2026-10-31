@@ -2,7 +2,7 @@ import { BellRing, CircleAlert, Clock3 } from 'lucide-react'
 import type {
   DashboardAlert,
   IntegrationState,
-} from '../../features/dashboard/dashboard.types'
+} from '../dashboard.types'
 import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 
 interface AlertsPanelProps {

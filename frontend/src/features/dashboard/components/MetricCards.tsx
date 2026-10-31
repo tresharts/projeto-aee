@@ -5,7 +5,7 @@ import {
   RotateCcw,
   TriangleAlert,
 } from 'lucide-react'
-import type { MetricItem } from '../../features/dashboard/dashboard.types'
+import type { MetricItem } from '../dashboard.types'
 
 const iconByMetric = {
   appointments: CalendarDays,

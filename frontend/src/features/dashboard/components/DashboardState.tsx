@@ -1,5 +1,5 @@
 import { LoaderCircle, LockKeyhole, RefreshCw, WifiOff } from 'lucide-react'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 
 interface DashboardStateProps {
   status: 'loading' | 'error' | 'unauthorized'

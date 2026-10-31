@@ -1,4 +1,4 @@
-import { MotivationBloom } from '../illustrations/DecorativeBlooms'
+import { MotivationBloom } from '@/components/illustrations/DecorativeBlooms'
 
 export function MotivationCard() {
   return (
