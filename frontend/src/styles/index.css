@@ -8,6 +8,27 @@
   font-family: Inter, 'Segoe UI', Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  --background: 228 94% 98%;
+  --foreground: 225 34% 31%;
+  --card: 0 0% 100%;
+  --card-foreground: 225 34% 31%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 225 34% 31%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 33% 96%;
+  --secondary-foreground: 225 34% 31%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 280 94% 74%;
+  --accent-foreground: 225 34% 31%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 262 83% 58%;
+  --radius: 0.75rem;
 }
 
 * {
@@ -657,15 +678,48 @@ input:focus-visible {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.64fr 1fr 1fr;
-  gap: 17px;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
   align-items: start;
+  min-width: 0;
 }
 
-@media (max-width: 1024px) {
+.agenda-column {
+  min-width: 0;
+}
+
+.widgets-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.widgets-top,
+.widgets-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-grid {
+    gap: 15px;
+  }
+  .widgets-column {
+    gap: 15px;
+  }
+  .widgets-top,
+  .widgets-bottom {
+    gap: 12px;
   }
 }
 
@@ -675,6 +729,7 @@ input:focus-visible {
 .pedagogical-panel,
 .motivation-card {
   background: #eaf2ff;
+  min-width: 0;
 }
 
 .agenda-panel {
@@ -872,21 +927,6 @@ input:focus-visible {
   line-height: 1.3;
 }
 
-.middle-column,
-.right-column {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-}
-
-.middle-column {
-  gap: 37px;
-}
-
-.right-column {
-  gap: 16px;
-}
-
 .alerts-panel {
   overflow: hidden;
   padding-top: 13px;
@@ -974,9 +1014,9 @@ input:focus-visible {
 }
 
 .school-returns-panel {
-  min-height: 295px;
   padding: 13px 10px 14px;
   border-radius: 49px;
+  min-width: 0;
 }
 
 .school-heading-row {
@@ -1693,17 +1733,12 @@ input:focus-visible {
     padding: 18px 26px;
   }
 
-  .middle-column,
-  .right-column {
-    gap: 14px;
-  }
-
   .alerts-panel,
-  .school-returns-panel,
-  .pedagogical-panel,
-  .motivation-card {
-    width: 100%;
-  }
+    .school-returns-panel,
+    .pedagogical-panel,
+    .motivation-card {
+      width: 100%;
+    }
 
   .alerts-panel,
   .pedagogical-panel {
@@ -2093,12 +2128,6 @@ input:focus-visible {
     padding: 3px 7px;
     border-radius: 11px;
     font-size: 10px;
-  }
-
-  .middle-column,
-  .right-column {
-    width: 100%;
-    gap: 15px;
   }
 
   .alerts-panel {

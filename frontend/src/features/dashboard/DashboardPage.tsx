@@ -137,25 +137,29 @@ export function DashboardPage() {
               <MetricCards metrics={data.metrics} />
 
               <div className="dashboard-grid">
-                <AgendaPanel
-                  appointments={data.appointments}
-                  state={data.agendaState}
-                  onUnavailable={showUnavailable}
-                />
-                <div className="middle-column">
-                  <AlertsPanel alerts={data.alerts} state={data.alertsState} />
-                  <SchoolReturnsPanel
-                    returns={data.schoolReturns}
-                    state={data.schoolReturnsState}
+                <div className="agenda-column">
+                  <AgendaPanel
+                    appointments={data.appointments}
+                    state={data.agendaState}
                     onUnavailable={showUnavailable}
                   />
                 </div>
-                <div className="right-column">
-                  <PedagogicalPanel
-                    indicator={data.indicator}
-                    state={data.indicatorState}
-                  />
-                  <MotivationCard />
+                <div className="widgets-column">
+                  <div className="widgets-top">
+                    <AlertsPanel alerts={data.alerts} state={data.alertsState} />
+                    <SchoolReturnsPanel
+                      returns={data.schoolReturns}
+                      state={data.schoolReturnsState}
+                      onUnavailable={showUnavailable}
+                    />
+                  </div>
+                  <div className="widgets-bottom">
+                    <PedagogicalPanel
+                      indicator={data.indicator}
+                      state={data.indicatorState}
+                    />
+                    <MotivationCard />
+                  </div>
                 </div>
               </div>
             </>
