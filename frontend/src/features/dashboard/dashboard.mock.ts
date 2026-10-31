@@ -3,7 +3,6 @@ import type { DashboardData } from './dashboard.types'
 export const dashboardDemoData: DashboardData = {
   mode: 'demo',
   teacherName: 'Lara',
-  sourceSummary: 'Modo demonstração — dados fictícios',
   metrics: [
     {
       id: 'appointments',
@@ -118,6 +117,7 @@ export const dashboardDemoData: DashboardData = {
       id: 'return-1',
       teacherName: 'Prof. Carla Soares',
       schoolName: 'EMTI Francisco Sá',
+      dateSent: '2026-10-31T09:20:00',
       message:
         'Lara apresentou boa interação na aula de hoje, recomendo manter as adaptações de rotina.',
       hashtag: '#focoCentral',
@@ -126,6 +126,7 @@ export const dashboardDemoData: DashboardData = {
     {
       id: 'return-2',
       teacherName: 'Prof. Rodrigo Santoro',
+      dateSent: '2026-10-30T14:05:00',
       message:
         'Willian melhorou na leitura, mas ainda apresenta dificuldade na escrita.',
       hashtag: '#estimuloSocial',
@@ -135,6 +136,7 @@ export const dashboardDemoData: DashboardData = {
       id: 'return-3',
       teacherName: 'Prof. Carla Soares',
       schoolName: 'EMTI Francisco Sá',
+      dateSent: '2026-10-29T11:40:00',
       message:
         'Vinicius conseguiu realizar as atividades de forma correta, ainda com um pouco de dificuldade.',
       hashtag: '#estimuloVisual',

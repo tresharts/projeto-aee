@@ -1,10 +1,10 @@
 import { CalendarDays, Plus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Button } from '../../components/ui/button'
 import { AgendaPanel } from '../../components/dashboard/AgendaPanel'
 import { AlertsPanel } from '../../components/dashboard/AlertsPanel'
 import { DashboardState } from '../../components/dashboard/DashboardState'
 import { MetricCards } from '../../components/dashboard/MetricCards'
-import { ModeBanner } from '../../components/dashboard/ModeBanner'
 import { MotivationCard } from '../../components/dashboard/MotivationCard'
 import { PedagogicalPanel } from '../../components/dashboard/PedagogicalPanel'
 import { SchoolReturnsPanel } from '../../components/dashboard/SchoolReturnsPanel'
@@ -122,29 +122,21 @@ export function DashboardPage() {
                       {formattedDate}
                     </time>
                   </p>
-                  <button
+                  <Button
+                    variant="ghost"
                     className="register-button"
                     type="button"
                     onClick={() => showUnavailable('O registro de atendimento avulso')}
                   >
                     <Plus aria-hidden="true" />
                     registrar atendimento avulso
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <ModeBanner mode={data.mode} summary={data.sourceSummary} />
-              <MetricCards metrics={data.metrics} />
-
               <div className="dashboard-grid">
-                <div className="agenda-column">
-                  <AgendaPanel
-                    appointments={data.appointments}
-                    state={data.agendaState}
-                    onUnavailable={showUnavailable}
-                  />
-                </div>
                 <div className="widgets-column">
+                  <MetricCards metrics={data.metrics} />
                   <div className="widgets-top">
                     <AlertsPanel alerts={data.alerts} state={data.alertsState} />
                     <SchoolReturnsPanel
@@ -154,12 +146,19 @@ export function DashboardPage() {
                     />
                   </div>
                   <div className="widgets-bottom">
-                    <PedagogicalPanel
-                      indicator={data.indicator}
-                      state={data.indicatorState}
-                    />
                     <MotivationCard />
                   </div>
+                </div>
+                <div className="agenda-column">
+                  <AgendaPanel
+                    appointments={data.appointments}
+                    state={data.agendaState}
+                    onUnavailable={showUnavailable}
+                  />
+                  <PedagogicalPanel
+                    indicator={data.indicator}
+                    state={data.indicatorState}
+                  />
                 </div>
               </div>
             </>

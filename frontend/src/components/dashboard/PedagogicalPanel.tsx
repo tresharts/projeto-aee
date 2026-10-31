@@ -14,6 +14,18 @@ export function PedagogicalPanel({
   indicator,
   state,
 }: PedagogicalPanelProps) {
+  const attendanceRate = indicator.attendanceRate ?? 0
+  const municipalTarget = indicator.municipalTarget ?? 0
+  const targetDifference = Math.round(attendanceRate - municipalTarget)
+  const firstWeek = indicator.weeklyFrequency[0]
+  const lastWeek = indicator.weeklyFrequency[indicator.weeklyFrequency.length - 1]
+  const weeklyDifference =
+    indicator.weeklyFrequency.length > 1 &&
+    firstWeek !== undefined &&
+    lastWeek !== undefined
+      ? Math.round(lastWeek - firstWeek)
+      : null
+
   return (
     <section className="pedagogical-panel" aria-labelledby="pedagogical-heading">
       <h2 id="pedagogical-heading">
@@ -33,19 +45,28 @@ export function PedagogicalPanel({
             >
               <div>
                 <strong>{indicator.attendanceRate}%</strong>
-                <span>presença efetiva</span>
+                <span>
+                  presença
+                  <br />
+                  efetiva
+                </span>
               </div>
             </div>
             <div className="indicator-kpis">
               <div>
                 <span>Meta Municipal</span>
-                <strong>{indicator.municipalTarget?.toFixed(1)}%</strong>
-                <small>✓ meta atingida</small>
+                <strong>{municipalTarget.toFixed(0)}%</strong>
+                <small>
+                  {targetDifference > 0
+                    ? `+${targetDifference} pontos acima da meta`
+                    : targetDifference < 0
+                      ? `${targetDifference} pontos abaixo da meta`
+                      : 'na meta'}
+                </small>
               </div>
-              <div>
+              <div className="indicator-kpi--single-line">
                 <span>Faltas justificadas</span>
-                <strong>{indicator.justifiedAbsenceRate?.toFixed(1)}%</strong>
-                <small>✓ {indicator.justifiedAbsenceLabel}</small>
+                <strong>{indicator.justifiedAbsenceRate?.toFixed(0)}%</strong>
               </div>
             </div>
           </div>
@@ -53,13 +74,11 @@ export function PedagogicalPanel({
           <div className="indicator-links">
             <div>
               <UsersRound aria-hidden="true" />
-              <strong>{indicator.activeStudents} alunos</strong>
-              <span>ativos no polo</span>
+              <strong>{indicator.activeStudents} ativos</strong>
             </div>
             <div>
               <CircleDot aria-hidden="true" />
               <strong>{indicator.atRiskStudents} em risco</strong>
-              <span>de evasão</span>
             </div>
             <div>
               <Target aria-hidden="true" />
@@ -67,14 +86,34 @@ export function PedagogicalPanel({
             </div>
           </div>
 
-          <p className="frequency-title">
-            Evolução da frequência <span>(Últimas 5 semanas)</span>
-          </p>
-          <div className="frequency-chart" aria-label="Evolução da frequência">
+          <div className="frequency-heading">
+            <p className="frequency-title">
+              Frequência <span>últimas 5 semanas</span>
+            </p>
+            {weeklyDifference !== null && (
+              <strong
+                className={`frequency-trend ${weeklyDifference >= 0 ? 'trend-positive' : 'trend-negative'}`}
+              >
+                {weeklyDifference > 0 ? '+' : ''}
+                {weeklyDifference} pontos
+              </strong>
+            )}
+          </div>
+          <div
+            className="frequency-chart"
+            role="img"
+            aria-label={`Evolução da frequência nas últimas cinco semanas${
+              weeklyDifference === null
+                ? ''
+                : `: ${weeklyDifference > 0 ? '+' : ''}${weeklyDifference} pontos percentuais`
+            }`}
+          >
             {indicator.weeklyFrequency.map((value, index) => (
               <div className="chart-bar-wrap" key={`${index}-${value}`}>
-                <span className="chart-bar" style={{ height: `${value}%` }} />
-                <small>Sem {index + 1}</small>
+                <div className="chart-bar-area">
+                  <span className="chart-bar" style={{ height: `${value}%` }} />
+                </div>
+                <small>S{index + 1} {value}%</small>
               </div>
             ))}
           </div>

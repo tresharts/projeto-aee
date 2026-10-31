@@ -34,6 +34,7 @@ export interface SchoolReturn {
   id: string
   teacherName: string
   schoolName?: string
+  dateSent?: string
   message: string
   hashtag: string
   avatarTone: Appointment['avatarTone']
@@ -62,7 +63,6 @@ export interface DashboardData {
   alertsState: IntegrationState
   schoolReturnsState: IntegrationState
   indicatorState: IntegrationState
-  sourceSummary: string
 }
 
 export interface ApiStudent {

@@ -1,8 +1,10 @@
-import { Clock3, MessageSquareText } from 'lucide-react'
+import { CalendarDays, Clock3, MessageSquareText } from 'lucide-react'
 import type {
   IntegrationState,
   SchoolReturn,
 } from '../../features/dashboard/dashboard.types'
+import { Button } from '../ui/button'
+import { formatShortDate } from '../../lib/date'
 import { AvatarBadge } from './AvatarBadge'
 import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 
@@ -26,9 +28,13 @@ export function SchoolReturnsPanel({
           </span>
           Retornos da Escola regular
         </h2>
-        <button type="button" onClick={() => onUnavailable('Os retornos completos')}>
+        <Button
+          variant="ghost"
+          type="button"
+          onClick={() => onUnavailable('Os retornos completos')}
+        >
           ver todos <span aria-hidden="true">›</span>
-        </button>
+        </Button>
       </div>
       {state === 'pending' ? (
         <IntegrationPlaceholder compact />
@@ -51,9 +57,14 @@ export function SchoolReturnsPanel({
                 <p className="return-author">
                   <strong>{item.teacherName}</strong>
                   {item.schoolName && <small>{item.schoolName}</small>}
+                  {item.dateSent && (
+                    <time className="return-date" dateTime={item.dateSent}>
+                      <CalendarDays aria-hidden="true" />
+                      {formatShortDate(item.dateSent)}
+                    </time>
+                  )}
                 </p>
                 <p className="return-message">{item.message}</p>
-                <span className="return-hashtag">{item.hashtag}</span>
               </div>
               <span className="online-dot" aria-label="Novo retorno" />
             </article>

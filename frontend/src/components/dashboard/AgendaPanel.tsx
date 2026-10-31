@@ -1,5 +1,6 @@
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, Pause, Play } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Button } from '../ui/button'
 import { getDayPeriod } from '../../lib/date'
 import type {
   Appointment,
@@ -54,18 +55,20 @@ export function AgendaPanel({
           </span>
           Agenda do dia
         </h2>
-        <button
+        <Button
+          variant="ghost"
           className="view-all-button"
           type="button"
           onClick={() => onUnavailable('A agenda completa')}
         >
           ver todos <span aria-hidden="true">›</span>
-        </button>
+        </Button>
       </div>
 
       <div className="agenda-filters" aria-label="Filtrar agenda por período">
         {filters.map((filter) => (
-          <button
+          <Button
+            variant="ghost"
             className={period === filter.id ? 'selected' : ''}
             key={filter.id}
             type="button"
@@ -73,7 +76,7 @@ export function AgendaPanel({
             onClick={() => setPeriod(filter.id)}
           >
             {filter.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -91,8 +94,10 @@ export function AgendaPanel({
                 tone={appointment.avatarTone}
               />
               <div className="student-details">
-                <strong>{appointment.studentName}</strong>
-                <small>{appointment.schoolName}</small>
+                <div className="student-name-line">
+                  <strong>{appointment.studentName}</strong>
+                  <small>{appointment.schoolName}</small>
+                </div>
                 <div className="student-tags">
                   {appointment.tags.map((tag) => (
                     <span className={tagClassName(tag)} key={tag}>
@@ -102,22 +107,25 @@ export function AgendaPanel({
                 </div>
               </div>
               <div className="appointment-status">
-                <span
-                  className={
-                    appointment.status === 'Em andamento'
-                      ? 'status-progress'
-                      : 'status-waiting'
-                  }
-                >
-                  {appointment.status}
-                </span>
-                {appointment.status === 'Aguardando' && (
-                  <button
+                {appointment.status === 'Aguardando' ? (
+                  <Button
+                    variant="ghost"
+                    className="appointment-status-trigger"
                     type="button"
+                    aria-label={`Status: aguardando. Iniciar atendimento para ${appointment.studentName}`}
                     onClick={() => onUnavailable('O início de atendimento')}
                   >
-                    Iniciar
-                  </button>
+                    <span className="appointment-status-default">
+                      <Pause className="appointment-status-play" aria-hidden="true" />
+                      <span className="status-waiting">Aguardando</span>
+                    </span>
+                    <span className="appointment-status-action-label">
+                      <Play className="appointment-status-action-icon" aria-hidden="true" />
+                      <span>Iniciar atendimento</span>
+                    </span>
+                  </Button>
+                ) : (
+                  <span className="status-progress">Em andamento</span>
                 )}
               </div>
             </article>

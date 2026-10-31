@@ -40,6 +40,7 @@ export function mapApiPayloadToDashboard(
     id: retorno.id,
     teacherName: retorno.nomeProfessorEscola,
     schoolName: retorno.escola,
+    dateSent: retorno.dataEnvio,
     message: retorno.mensagem,
     hashtag: '#retornoEscola',
     avatarTone: getAvatarTone(index),
@@ -52,7 +53,6 @@ export function mapApiPayloadToDashboard(
   return {
     mode: 'api',
     teacherName: 'Professora',
-    sourceSummary: `Modo API — ${agendaDoDia.length} atendimento(s) hoje, ${alertas.length} alerta(s) e ${feedRetornos.length} retorno(s) de escola`,
     metrics: [
       {
         id: 'appointments',
