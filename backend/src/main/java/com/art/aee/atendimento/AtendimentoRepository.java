@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 public interface AtendimentoRepository extends JpaRepository<Atendimento, UUID> {
 
@@ -22,4 +23,12 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, UUID> 
     Page<Atendimento> findByDataHoraGreaterThanEqual(LocalDateTime inicio, Pageable pageable);
 
     Page<Atendimento> findByDataHoraLessThanEqual(LocalDateTime fim, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdIn(List<UUID> alunoIds, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdInAndDataHoraBetween(List<UUID> alunoIds, LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdInAndDataHoraGreaterThanEqual(List<UUID> alunoIds, LocalDateTime inicio, Pageable pageable);
+
+    Page<Atendimento> findByAlunoIdInAndDataHoraLessThanEqual(List<UUID> alunoIds, LocalDateTime fim, Pageable pageable);
 }

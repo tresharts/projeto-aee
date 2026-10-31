@@ -33,8 +33,8 @@ public class TurmaService {
     }
 
     @Transactional
-    public TurmaResponse criar(TurmaRequest request) {
-        validarEscola(request.escolaId());
+    public TurmaResponse criar(TurmaRequest request, UUID escolaUsuarioId) {
+        validarEscola(request.escolaId(), escolaUsuarioId);
 
         Turma turma = new Turma();
         turmaMapper.copiarDados(request, turma);
@@ -43,47 +43,36 @@ public class TurmaService {
     }
 
     @Transactional
-    public TurmaResponse atualizar(UUID id, TurmaRequest request) {
-        Turma turma = buscarEntidade(id);
-        validarEscola(request.escolaId());
+    public TurmaResponse atualizar(UUID id, TurmaRequest request, UUID escolaUsuarioId) {
+        Turma turma = buscarEntidade(id, escolaUsuarioId);
+        validarEscola(request.escolaId(), escolaUsuarioId);
         turmaMapper.copiarDados(request, turma);
 
         return turmaMapper.paraResponse(turmaRepository.save(turma));
     }
 
     @Transactional(readOnly = true)
-    public TurmaResponse buscarPorId(UUID id) {
-        return turmaMapper.paraResponse(buscarEntidade(id));
+    public TurmaResponse buscarPorId(UUID id, UUID escolaUsuarioId) {
+        return turmaMapper.paraResponse(buscarEntidade(id, escolaUsuarioId));
     }
 
     @Transactional(readOnly = true)
-    public Page<TurmaResponse> listar(Pageable pageable, UUID escolaId, String nome) {
+    public Page<TurmaResponse> listar(Pageable pageable, UUID filtroEscolaId, String nome, UUID escolaUsuarioId) {
+        validarFiltroEscola(filtroEscolaId, escolaUsuarioId);
         boolean temNome = nome != null && !nome.isBlank();
-
-        if (escolaId != null && temNome) {
-            return turmaRepository
-                    .findByEscolaIdAndNomeContainingIgnoreCase(escolaId, nome, pageable)
-                    .map(turmaMapper::paraResponse);
-        }
-
-        if (escolaId != null) {
-            return turmaRepository
-                    .findByEscolaId(escolaId, pageable)
-                    .map(turmaMapper::paraResponse);
-        }
 
         if (temNome) {
             return turmaRepository
-                    .findByNomeContainingIgnoreCase(nome, pageable)
+                    .findByEscolaIdAndNomeContainingIgnoreCase(escolaUsuarioId, nome, pageable)
                     .map(turmaMapper::paraResponse);
         }
 
-        return turmaRepository.findAll(pageable).map(turmaMapper::paraResponse);
+        return turmaRepository.findByEscolaId(escolaUsuarioId, pageable).map(turmaMapper::paraResponse);
     }
 
     @Transactional
-    public void remover(UUID id) {
-        Turma turma = buscarEntidade(id);
+    public void remover(UUID id, UUID escolaUsuarioId) {
+        Turma turma = buscarEntidade(id, escolaUsuarioId);
 
         if (alunoRepository.existsByTurmaId(id)) {
             throw new ConflitoException("Não é possível remover turma com alunos vinculados");
@@ -92,13 +81,22 @@ public class TurmaService {
         turmaRepository.delete(turma);
     }
 
-    private Turma buscarEntidade(UUID id) {
+    private Turma buscarEntidade(UUID id, UUID escolaUsuarioId) {
         return turmaRepository.findById(id)
+                .filter(turma -> turma.getEscolaId().equals(escolaUsuarioId))
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada"));
     }
 
-    private void validarEscola(UUID escolaId) {
+    private void validarEscola(UUID escolaId, UUID escolaUsuarioId) {
+        validarFiltroEscola(escolaId, escolaUsuarioId);
         if (!escolaRepository.existsById(escolaId)) {
+            throw new RecursoNaoEncontradoException("Escola não encontrada");
+        }
+    }
+
+    private void validarFiltroEscola(UUID filtroEscolaId, UUID escolaUsuarioId) {
+        if (escolaUsuarioId == null) throw new ConflitoException("A conta precisa estar vinculada a uma escola.");
+        if (filtroEscolaId != null && !filtroEscolaId.equals(escolaUsuarioId)) {
             throw new RecursoNaoEncontradoException("Escola não encontrada");
         }
     }

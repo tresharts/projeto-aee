@@ -26,6 +26,16 @@ public class GlobalExceptionHandler {
         return resposta(HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(CredenciaisInvalidasException.class)
+    public ResponseEntity<ErroResponse> handleCredenciaisInvalidas(CredenciaisInvalidasException e) {
+        return resposta(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(ContaPendenteException.class)
+    public ResponseEntity<ErroResponse> handleContaPendente(ContaPendenteException e) {
+        return resposta(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> handleValidacao(MethodArgumentNotValidException e) {
         String mensagem = e.getBindingResult().getFieldErrors().stream()

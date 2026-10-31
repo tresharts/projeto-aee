@@ -11,6 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.art.aee.professor.Professor;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ public class AtendimentoController {
 
     @GetMapping
     public ResponseEntity<Page<AtendimentoResponse>> listar(
+            @AuthenticationPrincipal Professor professor,
             @RequestParam(value = "alunoId", required = false) UUID alunoId,
             @RequestParam(value = "inicio", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
@@ -35,19 +38,23 @@ public class AtendimentoController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
             @PageableDefault(page = 0, size = 10, sort = "dataHora", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<AtendimentoResponse> atendimentos = atendimentoService.listar(pageable, alunoId, inicio, fim);
+        Page<AtendimentoResponse> atendimentos = atendimentoService.listar(
+                pageable, alunoId, inicio, fim, professor.getEscolaId());
         return ResponseEntity.ok(atendimentos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AtendimentoResponse> buscarPorId(@PathVariable UUID id) {
-        AtendimentoResponse atendimento = atendimentoService.buscarPorId(id);
+    public ResponseEntity<AtendimentoResponse> buscarPorId(
+            @AuthenticationPrincipal Professor professor, @PathVariable UUID id) {
+        AtendimentoResponse atendimento = atendimentoService.buscarPorId(id, professor.getEscolaId());
         return ResponseEntity.ok(atendimento);
     }
 
     @PostMapping
-    public ResponseEntity<AtendimentoResponse> criar(@Valid @RequestBody AtendimentoRequest request) {
-        AtendimentoResponse atendimentoCriado = atendimentoService.criar(request);
+    public ResponseEntity<AtendimentoResponse> criar(
+            @AuthenticationPrincipal Professor professor, @Valid @RequestBody AtendimentoRequest request) {
+        AtendimentoResponse atendimentoCriado = atendimentoService.criar(
+                request, professor.getId(), professor.getEscolaId());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -59,10 +66,12 @@ public class AtendimentoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AtendimentoResponse> atualizar(
+            @AuthenticationPrincipal Professor professor,
             @PathVariable UUID id,
             @Valid @RequestBody AtendimentoRequest request) {
 
-        AtendimentoResponse atendimentoAtualizado = atendimentoService.atualizar(id, request);
+        AtendimentoResponse atendimentoAtualizado = atendimentoService.atualizar(
+                id, request, professor.getId(), professor.getEscolaId());
         return ResponseEntity.ok(atendimentoAtualizado);
     }
 }
