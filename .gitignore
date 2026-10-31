@@ -53,3 +53,12 @@ Thumbs.db
 application-local.properties
 *.env
 .env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/*.tsbuildinfo
+
+# Local Codex reference material
+/aee-conecta-material-para-codex/
