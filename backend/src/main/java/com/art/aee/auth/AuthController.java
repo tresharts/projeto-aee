@@ -2,6 +2,8 @@ package com.art.aee.auth;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +19,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request,
-            HttpServletResponse response) {
-        AuthResponse authResponse = authService.register(request);
-        addRefreshCookie(response, authResponse.refreshToken());
-        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
+    public ResponseEntity<RegistrationResponse> register(@Valid @RequestBody RegisterRequest request) {
+        RegistrationResponse registration = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registration);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
-        AuthResponse authResponse = authService.login(request);
-        addRefreshCookie(response, authResponse.refreshToken());
-        return ResponseEntity.ok(authResponse);
+        LoginResult result = authService.login(request);
+        addRefreshCookie(response, result.refreshToken());
+        return ResponseEntity.ok(result.response());
     }
 
     @PostMapping("/refresh")
@@ -49,16 +48,21 @@ public class AuthController {
             HttpServletResponse response) {
         authService.logout(refreshToken);
 
-        response.setHeader("Set-Cookie",
-                "refreshToken=; Path=/auth; HttpOnly; Secure; SameSite=Strict; Max-Age=0");
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie("").maxAge(0).build().toString());
 
         return ResponseEntity.noContent().build();
     }
 
     private void addRefreshCookie(HttpServletResponse response, String refreshToken) {
-        response.setHeader("Set-Cookie",
-                "refreshToken=" + refreshToken
-                        + "; Path=/auth; HttpOnly; Secure; SameSite=Strict; Max-Age="
-                        + (7 * 24 * 60 * 60));
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie(refreshToken).build().toString());
+    }
+
+    private ResponseCookie.ResponseCookieBuilder refreshCookie(String value) {
+        return ResponseCookie.from("refreshToken", value)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/auth")
+                .maxAge(7 * 24 * 60 * 60);
     }
 }

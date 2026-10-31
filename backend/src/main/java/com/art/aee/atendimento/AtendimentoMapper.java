@@ -16,7 +16,6 @@ public class AtendimentoMapper {
 
     public void copiarDados(AtendimentoRequest request, Atendimento atendimento) {
         atendimento.setAlunoId(request.alunoId());
-        atendimento.setProfessorId(request.professorId());
         atendimento.setDataHora(request.dataHora());
         atendimento.setHumor(request.humor());
         atendimento.setFoco(request.foco());

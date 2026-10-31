@@ -12,4 +12,10 @@ public interface EscolaRepository extends JpaRepository<Escola, UUID> {
     Page<Escola> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     Optional<Escola> findByNomeIgnoreCase(String nome);
+
+    Optional<Escola> findByCodigoCadastro(String codigoCadastro);
+
+    boolean existsByCodigoCadastro(String codigoCadastro);
+
+    java.util.List<Escola> findByCodigoCadastroIsNull();
 }

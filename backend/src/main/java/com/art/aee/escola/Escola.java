@@ -24,4 +24,7 @@ public class Escola {
     @Size(max = 100, message = "O nome da escola não pode ultrapassar 100 caracteres")
     @Column(nullable = false, length = 100)
     private String nome;
+
+    @Column(unique = true, length = 10)
+    private String codigoCadastro;
 }

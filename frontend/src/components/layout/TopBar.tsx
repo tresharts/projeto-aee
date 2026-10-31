@@ -1,4 +1,6 @@
-import { Bell, ChevronUp, Search } from 'lucide-react'
+import { Bell, LogOut, Search } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/auth/useAuth'
 import { AvatarBadge } from '@/components/people/AvatarBadge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +27,13 @@ export function TopBar({
   onUnavailable,
 }: TopBarProps) {
   const showResults = query.trim().length >= 2
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <header className="topbar">
@@ -87,15 +96,15 @@ export function TopBar({
           size="default"
           className="profile-button"
           type="button"
-          aria-label="Perfil da professora — em breve"
-          onClick={() => onUnavailable('O perfil da professora')}
+          aria-label="Sair da conta"
+          onClick={() => void handleSignOut()}
         >
-          <AvatarBadge name="Professora Lara Silva" tone="yellow" size="lg" />
+          <AvatarBadge name={user?.name ?? 'Professora'} tone="yellow" size="lg" />
           <span className="profile-copy">
-            <strong>Prof. Lara Silva</strong>
-            <small>Professora AEE</small>
+            <strong>{user?.name ?? 'Professora'}</strong>
+            <small>Sair da conta</small>
           </span>
-          <ChevronUp className="profile-chevron" aria-hidden="true" />
+          <LogOut className="profile-chevron" aria-hidden="true" />
         </Button>
       </div>
     </header>

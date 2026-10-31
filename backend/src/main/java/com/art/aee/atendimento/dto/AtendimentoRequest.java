@@ -12,8 +12,6 @@ public record AtendimentoRequest(
         @NotNull(message = "Aluno é obrigatório")
         UUID alunoId,
 
-        UUID professorId,
-
         @NotNull(message = "Data e hora são obrigatórias")
         @PastOrPresent(message = "Data e hora não podem ser futuras")
         LocalDateTime dataHora,
