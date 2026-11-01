@@ -31,4 +31,8 @@ public class Turma {
     @NotNull(message = "Escola é obrigatória")
     @Column(nullable = false)
     private UUID escolaId;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    @Builder.Default
+    private boolean ativo = true;
 }

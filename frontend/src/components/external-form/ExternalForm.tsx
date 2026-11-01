@@ -64,7 +64,7 @@ export function ExternalForm() {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="max-w-md mx-auto">
         <Card className="border-0 bg-white p-6 shadow-sm">
-          <h1 className="text-lg font-semibold text-gray-900 mb-6">
+          <h1 className="app-gradient-title text-lg font-semibold mb-6">
             {valido === false ? 'Link Inválido' : 'Pesquisa da Escola Regular'}
           </h1>
 

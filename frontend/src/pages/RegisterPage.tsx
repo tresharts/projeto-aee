@@ -40,7 +40,7 @@ export function RegisterPage() {
   return (
     <AuthShell compact>
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#426294]">CRIAR CONTA</h1>
+        <h1 className="app-gradient-title text-2xl font-bold">CRIAR CONTA</h1>
         <p className="mt-1 text-sm text-[#64738d]">Solicite acesso ao AEE Conecta</p>
       </div>
       {submitted ? (

@@ -7,6 +7,7 @@ import { ExternalFormGenerate } from '@/pages/ExternalFormGenerate'
 import { AdminUsersPage } from '@/pages/AdminUsersPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
+import { StudentsPage } from '@/features/students/StudentsPage'
 
 function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: 'ADMIN' | 'PROFESSOR' }) {
   const { user, loading } = useAuth()
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/external-form/gerar" element={<ProtectedRoute><ExternalFormGenerate /></ProtectedRoute>} />
           <Route path="/admin/usuarios" element={<ProtectedRoute role="ADMIN"><AdminUsersPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/alunos" element={<ProtectedRoute><StudentsPage /></ProtectedRoute>} />
           <Route path="/" element={<HomeRedirect />} />
           <Route path="*" element={<HomeRedirect />} />
         </Routes>

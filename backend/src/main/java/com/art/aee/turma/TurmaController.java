@@ -31,9 +31,10 @@ public class TurmaController {
             @AuthenticationPrincipal Professor professor,
             @RequestParam(value = "escolaId", required = false) UUID escolaId,
             @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "ativo", required = false) Boolean ativo,
             @PageableDefault(page = 0, size = 10, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<TurmaResponse> turmas = turmaService.listar(pageable, escolaId, nome, professor.getEscolaId());
+        Page<TurmaResponse> turmas = turmaService.listar(pageable, escolaId, nome, ativo, professor.getEscolaId());
         return ResponseEntity.ok(turmas);
     }
 
@@ -65,9 +66,16 @@ public class TurmaController {
         return ResponseEntity.ok(turmaAtualizada);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remover(@AuthenticationPrincipal Professor professor, @PathVariable UUID id) {
-        turmaService.remover(id, professor.getEscolaId());
+    @PatchMapping("/{id}/desativar")
+    public ResponseEntity<Void> desativar(@AuthenticationPrincipal Professor professor, @PathVariable UUID id) {
+        turmaService.desativar(id, professor.getEscolaId());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@AuthenticationPrincipal Professor professor, @PathVariable UUID id) {
+        turmaService.ativar(id, professor.getEscolaId());
 
         return ResponseEntity.noContent().build();
     }

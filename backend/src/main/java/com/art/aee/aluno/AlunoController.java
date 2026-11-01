@@ -30,10 +30,12 @@ public class AlunoController {
     public ResponseEntity<Page<AlunoResponse>> listar(
             @AuthenticationPrincipal Professor professor,
             @RequestParam(value = "escolaId", required = false) UUID escolaId,
+            @RequestParam(value = "turmaId", required = false) UUID turmaId,
+            @RequestParam(value = "ativo", required = false) Boolean ativo,
             @RequestParam(value = "nome", required = false) String nome,
             @PageableDefault(page = 0, size = 6, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<AlunoResponse> alunos = alunoService.listar(pageable, escolaId, nome, professor.getEscolaId());
+        Page<AlunoResponse> alunos = alunoService.listar(pageable, escolaId, turmaId, ativo, nome, professor.getEscolaId());
         return ResponseEntity.ok(alunos);
     }
 

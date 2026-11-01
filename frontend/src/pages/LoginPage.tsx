@@ -38,7 +38,7 @@ export function LoginPage() {
   return (
     <AuthShell>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-wide text-[#426294] sm:text-[2rem]">BEM-VINDA(O)</h1>
+        <h1 className="app-gradient-title text-3xl font-bold tracking-wide sm:text-[2rem]">BEM-VINDA(O)</h1>
         <p className="mt-3 text-sm font-medium tracking-wide text-[#64738d] sm:text-base">SUA ROTINA DE INCLUSÃO COMEÇA AQUI</p>
       </div>
       {error && <div role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
