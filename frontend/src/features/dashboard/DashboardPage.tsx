@@ -92,7 +92,7 @@ export function DashboardPage() {
 
   return (
     <div className="app-shell">
-      <Sidebar onUnavailable={showUnavailable} />
+      <Sidebar onUnavailable={showUnavailable} activePage="dashboard" />
       <div className="workspace">
         <TopBar
           query={query}
@@ -112,7 +112,7 @@ export function DashboardPage() {
             <>
               <div className="welcome-row">
                 <div className="welcome-copy">
-                  <h1>Olá, Professora {data.teacherName}!</h1>
+                  <h1 className="app-gradient-title">Olá, Professora {data.teacherName}!</h1>
                   <p>É um prazer ter você aqui no AEE Conecta</p>
                 </div>
                 <div className="welcome-actions">
@@ -165,7 +165,7 @@ export function DashboardPage() {
           )}
         </main>
       </div>
-      <BottomNavigation onUnavailable={showUnavailable} />
+      <BottomNavigation onUnavailable={showUnavailable} activePage="dashboard" />
       {notice && (
         <div className="availability-toast" role="status">
           {notice}

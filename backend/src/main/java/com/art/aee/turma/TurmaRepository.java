@@ -18,4 +18,8 @@ public interface TurmaRepository extends JpaRepository<Turma, UUID> {
     Page<Turma> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     Page<Turma> findByEscolaIdAndNomeContainingIgnoreCase(UUID escolaId, String nome, Pageable pageable);
+
+    Page<Turma> findByEscolaIdAndAtivo(UUID escolaId, boolean ativo, Pageable pageable);
+
+    Page<Turma> findByEscolaIdAndAtivoAndNomeContainingIgnoreCase(UUID escolaId, boolean ativo, String nome, Pageable pageable);
 }

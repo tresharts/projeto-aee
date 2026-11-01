@@ -7,5 +7,6 @@ public record TurmaResponse(
         String nome,
         Integer ano,
         UUID escolaId,
-        String nomeEscola
+        String nomeEscola,
+        boolean ativo
 ) {}

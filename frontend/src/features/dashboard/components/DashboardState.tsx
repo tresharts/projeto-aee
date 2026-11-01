@@ -29,7 +29,7 @@ export function DashboardState({
   return (
     <section className="dashboard-state" aria-live="polite">
       <Icon className={status === 'loading' ? 'spin' : ''} aria-hidden="true" />
-      <h1>{title}</h1>
+      <h1 className="app-gradient-title">{title}</h1>
       <p>
         {message ??
           'Aguarde enquanto buscamos os dados disponíveis no backend do AEE Conecta.'}

@@ -66,7 +66,7 @@ export function AdminUsersPage() {
       </header>
       <section className="mx-auto max-w-5xl px-5 py-10">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-          <div><div className="mb-2 flex items-center gap-2 text-sm font-medium text-[#7858b7]"><UsersRound className="h-4 w-4" />Gestão de acesso</div><h1 className="text-3xl font-bold text-[#34446f]">Cadastros para aprovação</h1><p className="mt-2 text-sm text-slate-600">Revise as solicitações antes de liberar o acesso ao sistema.</p></div>
+          <div><div className="mb-2 flex items-center gap-2 text-sm font-medium text-[#7858b7]"><UsersRound className="h-4 w-4" />Gestão de acesso</div><h1 className="app-gradient-title text-3xl font-bold">Cadastros para aprovação</h1><p className="mt-2 text-sm text-slate-600">Revise as solicitações antes de liberar o acesso ao sistema.</p></div>
           <Button variant="outline" onClick={() => void loadUsers()} disabled={loading} className="gap-2"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Atualizar</Button>
         </div>
         {school && <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#ded9f3] bg-[#f4f1fc] p-5"><div><p className="text-sm font-medium text-[#6f56a6]">Código de cadastro · {school.nome}</p><p className="mt-1 font-mono text-2xl font-bold tracking-[0.22em] text-[#384777]">{school.codigoCadastro}</p><p className="mt-1 text-xs text-slate-600">Compartilhe este código somente com as professoras desta escola.</p></div><Button variant="outline" onClick={() => { void navigator.clipboard.writeText(school.codigoCadastro).then(() => setCopied(true)) }}>{copied ? 'Copiado' : 'Copiar código'}</Button></div>}

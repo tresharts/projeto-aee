@@ -1,6 +1,5 @@
 package com.art.aee.turma;
 
-import com.art.aee.aluno.AlunoRepository;
 import com.art.aee.escola.EscolaRepository;
 import com.art.aee.turma.dto.TurmaRequest;
 import com.art.aee.turma.dto.TurmaResponse;
@@ -17,17 +16,14 @@ import java.util.UUID;
 public class TurmaService {
 
     private final TurmaRepository turmaRepository;
-    private final AlunoRepository alunoRepository;
     private final EscolaRepository escolaRepository;
     private final TurmaMapper turmaMapper;
 
     public TurmaService(
             TurmaRepository turmaRepository,
-            AlunoRepository alunoRepository,
             EscolaRepository escolaRepository,
             TurmaMapper turmaMapper) {
         this.turmaRepository = turmaRepository;
-        this.alunoRepository = alunoRepository;
         this.escolaRepository = escolaRepository;
         this.turmaMapper = turmaMapper;
     }
@@ -57,28 +53,33 @@ public class TurmaService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TurmaResponse> listar(Pageable pageable, UUID filtroEscolaId, String nome, UUID escolaUsuarioId) {
+    public Page<TurmaResponse> listar(Pageable pageable, UUID filtroEscolaId, String nome, Boolean ativo, UUID escolaUsuarioId) {
         validarFiltroEscola(filtroEscolaId, escolaUsuarioId);
         boolean temNome = nome != null && !nome.isBlank();
 
-        if (temNome) {
+        if (ativo != null && temNome) {
             return turmaRepository
-                    .findByEscolaIdAndNomeContainingIgnoreCase(escolaUsuarioId, nome, pageable)
+                    .findByEscolaIdAndAtivoAndNomeContainingIgnoreCase(escolaUsuarioId, ativo, nome, pageable)
                     .map(turmaMapper::paraResponse);
         }
+        if (ativo != null) return turmaRepository.findByEscolaIdAndAtivo(escolaUsuarioId, ativo, pageable).map(turmaMapper::paraResponse);
+        if (temNome) return turmaRepository.findByEscolaIdAndNomeContainingIgnoreCase(escolaUsuarioId, nome, pageable).map(turmaMapper::paraResponse);
 
         return turmaRepository.findByEscolaId(escolaUsuarioId, pageable).map(turmaMapper::paraResponse);
     }
 
     @Transactional
-    public void remover(UUID id, UUID escolaUsuarioId) {
+    public void desativar(UUID id, UUID escolaUsuarioId) {
         Turma turma = buscarEntidade(id, escolaUsuarioId);
+        turma.setAtivo(false);
+        turmaRepository.save(turma);
+    }
 
-        if (alunoRepository.existsByTurmaId(id)) {
-            throw new ConflitoException("Não é possível remover turma com alunos vinculados");
-        }
-
-        turmaRepository.delete(turma);
+    @Transactional
+    public void ativar(UUID id, UUID escolaUsuarioId) {
+        Turma turma = buscarEntidade(id, escolaUsuarioId);
+        turma.setAtivo(true);
+        turmaRepository.save(turma);
     }
 
     private Turma buscarEntidade(UUID id, UUID escolaUsuarioId) {

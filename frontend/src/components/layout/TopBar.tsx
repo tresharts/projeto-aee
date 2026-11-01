@@ -17,6 +17,7 @@ interface TopBarProps {
   searching: boolean
   onQueryChange: (query: string) => void
   onUnavailable: (feature: string) => void
+  onResultSelect?: (result: SearchResult) => void
 }
 
 export function TopBar({
@@ -25,6 +26,7 @@ export function TopBar({
   searching,
   onQueryChange,
   onUnavailable,
+  onResultSelect,
 }: TopBarProps) {
   const showResults = query.trim().length >= 2
   const { user, signOut } = useAuth()
@@ -67,7 +69,7 @@ export function TopBar({
                   role="option"
                   aria-selected="false"
                   key={result.id}
-                  onClick={() => onUnavailable('O perfil do aluno')}
+                  onClick={() => onResultSelect ? onResultSelect(result) : onUnavailable('O perfil do aluno')}
                 >
                   <strong>{result.name}</strong>
                   <span>{result.detail}</span>

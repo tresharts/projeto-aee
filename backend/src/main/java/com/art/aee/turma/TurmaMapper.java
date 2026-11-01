@@ -34,7 +34,8 @@ public class TurmaMapper {
                 turma.getNome(),
                 turma.getAno(),
                 turma.getEscolaId(),
-                nomeEscola
+                nomeEscola,
+                turma.isAtivo()
         );
     }
 }

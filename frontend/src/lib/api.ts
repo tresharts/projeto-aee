@@ -53,11 +53,15 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     fetch(`${API_BASE_URL}${path}`, {
       ...init,
       credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        ...init.headers,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: (() => {
+        const headers = new Headers(init.headers)
+        headers.set('Accept', 'application/json')
+        if (init.body && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
+          headers.set('Content-Type', 'application/json')
+        }
+        if (token) headers.set('Authorization', `Bearer ${token}`)
+        return headers
+      })(),
     })
 
   let response = await execute(accessToken)

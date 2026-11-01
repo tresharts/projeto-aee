@@ -3,26 +3,28 @@ import {
   ClipboardList,
   Link2,
   Settings,
+  House,
   UsersRound,
 } from 'lucide-react'
-import type { SVGProps } from 'react'
+import { Link } from 'react-router-dom'
 import { SidebarBloom } from '@/components/illustrations/DecorativeBlooms'
 import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
+  activePage?: 'dashboard' | 'students'
 }
 
 const navigation = [
-  { label: 'Dashboard', icon: HomeIcon, active: true },
-  { label: 'Meus Alunos', icon: UsersRound },
-  { label: 'Linha do tempo', icon: ClipboardList },
-  { label: 'Registro de Atendimento', icon: CalendarDays, multiline: true },
-  { label: 'Link mágico', icon: Link2 },
-  { label: 'Configurações', icon: Settings },
+  { key: 'dashboard', label: 'Dashboard', icon: House, route: '/dashboard' },
+  { key: 'students', label: 'Meus Alunos', icon: UsersRound, route: '/alunos' },
+  { key: 'timeline', label: 'Linha do tempo', icon: ClipboardList },
+  { key: 'attendance', label: 'Registro de Atendimento', icon: CalendarDays, multiline: true },
+  { key: 'external-form', label: 'Link mágico', icon: Link2 },
+  { key: 'settings', label: 'Configurações', icon: Settings },
 ]
 
-export function Sidebar({ onUnavailable }: SidebarProps) {
+export function Sidebar({ onUnavailable, activePage = 'dashboard' }: SidebarProps) {
   return (
     <aside className="sidebar" aria-label="Navegação principal">
       <img
@@ -33,24 +35,39 @@ export function Sidebar({ onUnavailable }: SidebarProps) {
       <nav className="sidebar-nav">
         {navigation.map((item) => {
           const Icon = item.icon
+          const isActive = item.key === activePage
+          const className = `justify-start ${isActive ? 'active' : ''} ${item.multiline ? 'multiline' : ''}`
+          const contents = <>
+            <span className="sidebar-icon"><Icon aria-hidden="true" /></span>
+            <span className="sidebar-label">{item.label}</span>
+            {!item.route && <span className="sr-only">Em breve</span>}
+          </>
           return (
-            <Button
-              variant="ghost"
-              size="default"
-              className={`justify-start ${item.active ? 'active' : ''} ${item.multiline ? 'multiline' : ''}`}
-              key={item.label}
-              type="button"
-              aria-current={item.active ? 'page' : undefined}
-              aria-label={item.active ? item.label : `${item.label} — em breve`}
-              title={item.active ? item.label : `${item.label} — em breve`}
-              onClick={() => !item.active && onUnavailable(item.label)}
-            >
-              <span className="sidebar-icon">
-                <Icon aria-hidden="true" />
-              </span>
-              <span className="sidebar-label">{item.label}</span>
-              {!item.active && <span className="sr-only">Em breve</span>}
-            </Button>
+            item.route ? (
+              <Button asChild variant="ghost" size="default" className={className} key={item.key}>
+                <Link
+                  to={item.route}
+                  aria-current={isActive ? 'page' : undefined}
+                  aria-label={item.label}
+                  title={item.label}
+                >
+                  {contents}
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="default"
+                className={className}
+                key={item.key}
+                type="button"
+                aria-label={`${item.label} — em breve`}
+                title={`${item.label} — em breve`}
+                onClick={() => onUnavailable(item.label)}
+              >
+                {contents}
+              </Button>
+            )
           )
         })}
       </nav>
@@ -58,13 +75,5 @@ export function Sidebar({ onUnavailable }: SidebarProps) {
         <SidebarBloom />
       </div>
     </aside>
-  )
-}
-
-function HomeIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" {...props}>
-      <path d="M12 2.8 2.5 10.9h2.8v10.3h5.1v-6.6h3.2v6.6h5.1V10.9h2.8L12 2.8Z" />
-    </svg>
   )
 }
