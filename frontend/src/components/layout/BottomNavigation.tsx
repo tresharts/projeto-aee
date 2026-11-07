@@ -1,16 +1,16 @@
-import { CalendarDays, House, Menu, UsersRound } from 'lucide-react'
+import { ClipboardList, House, Menu, UsersRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 
 interface BottomNavigationProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students'
+  activePage?: 'dashboard' | 'students' | 'attendance'
 }
 
 const items: { label: string; icon: typeof House; key: string; route?: string }[] = [
   { label: 'Início', icon: House, key: 'dashboard', route: '/dashboard' },
   { label: 'Alunos', icon: UsersRound, key: 'students', route: '/alunos' },
-  { label: 'Agenda', icon: CalendarDays, key: 'agenda' },
+  { label: 'Registro', icon: ClipboardList, key: 'attendance', route: '/registro-atendimento' },
   { label: 'Menu', icon: Menu, key: 'menu' },
 ]
 

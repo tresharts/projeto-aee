@@ -12,14 +12,14 @@ import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students'
+  activePage?: 'dashboard' | 'students' | 'attendance'
 }
 
 const navigation = [
   { key: 'dashboard', label: 'Dashboard', icon: House, route: '/dashboard' },
   { key: 'students', label: 'Meus Alunos', icon: UsersRound, route: '/alunos' },
   { key: 'timeline', label: 'Linha do tempo', icon: ClipboardList },
-  { key: 'attendance', label: 'Registro de Atendimento', icon: CalendarDays, multiline: true },
+  { key: 'attendance', label: 'Registro de Atendimento', icon: CalendarDays, route: '/registro-atendimento', multiline: true },
   { key: 'external-form', label: 'Link mágico', icon: Link2 },
   { key: 'settings', label: 'Configurações', icon: Settings },
 ]
