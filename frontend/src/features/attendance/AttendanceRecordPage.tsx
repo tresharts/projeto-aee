@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   BookOpenCheck,
   CalendarDays,
@@ -18,6 +18,10 @@ import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { TopBar } from '@/components/layout/TopBar'
 import { AvatarBadge } from '@/components/people/AvatarBadge'
 import { Button } from '@/components/ui/button'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { apiFetch, ApiError } from '@/lib/api'
+import type { Student } from '@/features/students/student.types'
+import { updateScheduledSessionStatus } from '@/features/calendar/calendar.service'
 
 type Tab = 'registro' | 'atividade' | 'habilidades' | 'observacoes'
 
@@ -57,6 +61,15 @@ function ChoiceList({ name, options, value, onChange }: { name: string; options:
 }
 
 export function AttendanceRecordPage() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const alunoId = searchParams.get('alunoId')
+  const sessaoId = searchParams.get('sessaoId')
+  const dataHoraSessao = searchParams.get('dataHora')
+  const [student, setStudent] = useState<Student | null>(null)
+  const [loadingStudent, setLoadingStudent] = useState(Boolean(alunoId))
+  const [markingAbsence, setMarkingAbsence] = useState(false)
+  const [absenceRegistered, setAbsenceRegistered] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('registro')
   const [mood, setMood] = useState('')
   const [participationValue, setParticipationValue] = useState('Não foi possível avaliar')
@@ -66,8 +79,46 @@ export function AttendanceRecordPage() {
   const demoMode = import.meta.env.VITE_DASHBOARD_DATA_MODE !== 'api'
   const demoLabel = useMemo(() => demoMode ? 'Visualização demonstrativa' : 'Integração de dados pendente', [demoMode])
 
+  useEffect(() => {
+    if (!alunoId) return
+    let active = true
+    setLoadingStudent(true)
+    void apiFetch<Student>(`/api/alunos/${encodeURIComponent(alunoId)}`)
+      .then((result) => { if (active) setStudent(result) })
+      .catch((cause) => { if (active) setNotice(cause instanceof ApiError ? cause.message : 'Não foi possível carregar o aluno.') })
+      .finally(() => { if (active) setLoadingStudent(false) })
+    return () => { active = false }
+  }, [alunoId])
+
   const unavailable = (feature: string) => setNotice(`${feature} estará disponível em breve.`)
   const pendingSave = () => setNotice('O salvamento deste registro depende da ampliação do contrato de atendimentos.')
+  const registerAbsence = async () => {
+    if (!sessaoId || !dataHoraSessao || markingAbsence) return
+    if (!window.confirm(`Registrar falta de ${student?.nome ?? 'aluno'} nesta sessão?`)) return
+    setMarkingAbsence(true)
+    try {
+      await updateScheduledSessionStatus(sessaoId, 'FALTA')
+      setAbsenceRegistered(true)
+      setNotice('Falta registrada no histórico do aluno.')
+      window.setTimeout(() => navigate(`/calendario?data=${encodeURIComponent(dataHoraSessao.slice(0, 10))}`), 900)
+    } catch (cause) {
+      setNotice(cause instanceof ApiError ? cause.message : 'Não foi possível registrar a falta.')
+    } finally {
+      setMarkingAbsence(false)
+    }
+  }
+
+  const age = student?.dataNascimento
+    ? (() => {
+        const today = new Date()
+        const birth = new Date(`${student.dataNascimento}T12:00:00`)
+        const birthdayHasPassed = today.getMonth() > birth.getMonth()
+          || (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate())
+        return today.getFullYear() - birth.getFullYear() - (birthdayHasPassed ? 0 : 1)
+      })()
+    : null
+  const sessionDateLabel = dataHoraSessao?.slice(0, 10).split('-').reverse().join('/') ?? '08.10.2026'
+  const sessionTimeLabel = dataHoraSessao?.slice(11, 16) ?? '14:30'
 
   return <div className="app-shell attendance-shell">
     <Sidebar activePage="attendance" onUnavailable={unavailable} />
@@ -84,18 +135,18 @@ export function AttendanceRecordPage() {
 
         <div className="attendance-top-grid">
           <section className="student-summary-card" aria-label="Resumo do aluno">
-            <AvatarBadge name="Vinicius Pereira" tone="pink" size="lg" />
+            <AvatarBadge name={student?.nome ?? 'Vinicius Pereira'} tone="pink" size="lg" />
             <div className="student-summary-copy">
-              <h2>Vinicius Pereira</h2>
-              <p>♧ R.A 2026.056 <i /> 10 anos</p>
-              <p><BookOpenCheck aria-hidden="true" /> EMTI Francisco Sá</p>
+              <h2>{loadingStudent ? 'Carregando aluno…' : student?.nome ?? 'Vinicius Pereira'}</h2>
+              <p><UserRound aria-hidden="true" /> {student?.nomeTurma ?? 'R.A 2026.056'} <i /> {age === null ? '10 anos' : `${age} anos`}</p>
+              <p><BookOpenCheck aria-hidden="true" /> {student?.nomeEscola ?? 'EMTI Francisco Sá'}</p>
               <p><UserRound aria-hidden="true" /> Professora responsável: Lara silva</p>
             </div>
             <div className="student-summary-bottom">
-              <strong>Deficiência visual</strong>
+              <strong>{student?.diagnostico || 'Dados do aluno'}</strong>
               <div className="appointment-chips">
-                <span><CalendarDays aria-hidden="true" /><small>Data do atendimento</small><b>08.10.2026</b></span>
-                <span><Clock3 aria-hidden="true" /><small>horário</small><b>14:30</b></span>
+                <span><CalendarDays aria-hidden="true" /><small>Data do atendimento</small><b>{sessionDateLabel}</b></span>
+                <span><Clock3 aria-hidden="true" /><small>horário</small><b>{sessionTimeLabel}</b></span>
                 <span><Sparkles aria-hidden="true" /><small>Duração</small><b>50 MIN</b></span>
               </div>
             </div>
@@ -141,6 +192,7 @@ export function AttendanceRecordPage() {
               <label>Data da aula <em>*</em><span><CalendarDays aria-hidden="true" /><input type="date" defaultValue="2026-10-27" /></span></label>
               <label>Horário <em>*</em><span><Clock3 aria-hidden="true" /><input type="time" defaultValue="14:00" /></span></label>
               <Button type="button" className="attendance-save" onClick={pendingSave}>Salvar</Button>
+              {sessaoId && <Button type="button" variant="outline" disabled={markingAbsence || absenceRegistered} onClick={() => void registerAbsence()}>{absenceRegistered ? 'Falta registrada' : markingAbsence ? 'Registrando falta…' : 'Registrar falta'}</Button>}
             </div>
           </section>
           <aside className="attendance-side-panel">

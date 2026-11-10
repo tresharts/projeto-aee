@@ -28,6 +28,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/external-form/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/external-form/*/submit").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/escolas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/escolas/**").hasRole("ADMIN")

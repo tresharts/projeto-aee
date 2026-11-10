@@ -13,7 +13,8 @@ import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 interface AgendaPanelProps {
   appointments: Appointment[]
   state: IntegrationState
-  onUnavailable: (feature: string) => void
+  onViewCalendar: () => void
+  onStartAttendance: (appointment: Appointment) => void
 }
 
 const filters: Array<{ id: DayPeriod; label: string }> = [
@@ -34,7 +35,8 @@ function tagClassName(tag: string) {
 export function AgendaPanel({
   appointments,
   state,
-  onUnavailable,
+  onViewCalendar,
+  onStartAttendance,
 }: AgendaPanelProps) {
   const [period, setPeriod] = useState<DayPeriod>('all')
   const visibleAppointments = useMemo(
@@ -59,7 +61,7 @@ export function AgendaPanel({
           variant="ghost"
           className="view-all-button"
           type="button"
-          onClick={() => onUnavailable('A agenda completa')}
+          onClick={onViewCalendar}
         >
           ver todos <span aria-hidden="true">›</span>
         </Button>
@@ -112,8 +114,8 @@ export function AgendaPanel({
                     variant="ghost"
                     className="appointment-status-trigger"
                     type="button"
-                    aria-label={`Status: aguardando. Iniciar atendimento para ${appointment.studentName}`}
-                    onClick={() => onUnavailable('O início de atendimento')}
+                    aria-label={`Iniciar atendimento de ${appointment.studentName}`}
+                    onClick={() => onStartAttendance(appointment)}
                   >
                     <span className="appointment-status-default">
                       <Pause className="appointment-status-play" aria-hidden="true" />
@@ -124,6 +126,12 @@ export function AgendaPanel({
                       <span>Iniciar atendimento</span>
                     </span>
                   </Button>
+                ) : appointment.status === 'Falta' ? (
+                  <span className="appointment-status-default status-absence">Falta registrada</span>
+                ) : appointment.status === 'Cancelado' ? (
+                  <span className="appointment-status-default">Cancelado</span>
+                ) : appointment.status === 'Realizado' ? (
+                  <span className="status-complete">Realizado</span>
                 ) : (
                   <span className="status-progress">Em andamento</span>
                 )}

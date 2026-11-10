@@ -1,6 +1,6 @@
 import {
   CalendarDays,
-  ClipboardList,
+  CalendarRange,
   Link2,
   Settings,
   House,
@@ -12,15 +12,15 @@ import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students' | 'attendance'
+  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar'
 }
 
 const navigation = [
   { key: 'dashboard', label: 'Dashboard', icon: House, route: '/dashboard' },
   { key: 'students', label: 'Meus Alunos', icon: UsersRound, route: '/alunos' },
-  { key: 'timeline', label: 'Linha do tempo', icon: ClipboardList },
+  { key: 'calendar', label: 'Calendário', icon: CalendarRange, route: '/calendario' },
   { key: 'attendance', label: 'Registro de Atendimento', icon: CalendarDays, route: '/registro-atendimento', multiline: true },
-  { key: 'external-form', label: 'Link mágico', icon: Link2 },
+  { key: 'external-form', label: 'Formulário', icon: Link2, route: '/external-form/gerar' },
   { key: 'settings', label: 'Configurações', icon: Settings },
 ]
 

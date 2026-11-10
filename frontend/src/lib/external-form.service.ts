@@ -7,8 +7,8 @@ export async function submeterRespostas(token: string, respostas: string[]) {
   })
 }
 
-export async function verificarToken(token: string) {
-  return apiFetch(`/api/external-form/${token}`, {
+export async function verificarToken<T = unknown>(token: string) {
+  return apiFetch<T>(`/api/external-form/${token}`, {
     method: 'GET',
   })
 }
