@@ -512,7 +512,8 @@ input:focus-visible {
 .welcome-copy p {
   margin: 0;
   color: #737da6;
-  font-size: 15.5px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .welcome-actions {
@@ -1259,6 +1260,7 @@ input:focus-visible {
   gap: 10px;
   padding: 8px 16px;
   color: #3e5273;
+  font-weight: 500;
   font-size: 14px;
   line-height: 1.2;
 }
@@ -1417,6 +1419,7 @@ input:focus-visible {
   overflow: hidden;
   margin: 3px 0 1px;
   color: #565e70;
+  font-weight: 500;
   font-size: 14px;
   line-height: 1.28;
   -webkit-box-orient: vertical;
@@ -3431,7 +3434,8 @@ input:focus-visible {
 .student-row-school {
   margin: 3px 0 0;
   color: #7180a4;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .student-status {
@@ -3861,4 +3865,5 @@ input:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.students-find-student-heading p { margin: 0; color: #6a78a8; font-size: 14px; font-weight: 500; }
 
