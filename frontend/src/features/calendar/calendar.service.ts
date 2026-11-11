@@ -52,6 +52,12 @@ export function updateScheduledSessionStatus(id: string, status: ScheduledSessio
   })
 }
 
+export function linkAttendanceToScheduledSession(id: string, attendanceId: string) {
+  return apiFetch<ScheduledSession>(`/api/sessoes/${id}/atendimento/${attendanceId}`, {
+    method: 'PUT',
+  })
+}
+
 export function getConsecutiveAbsenceAlerts() {
   return apiFetch<ConsecutiveAbsenceAlert[]>('/api/sessoes/alertas/faltas-consecutivas')
 }

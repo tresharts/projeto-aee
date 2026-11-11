@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { AlertCircle, Check, GraduationCap, LoaderCircle, Pencil, Plus, RotateCcw, Search, UserRoundCheck, UserRoundX, UsersRound, X } from 'lucide-react'
+import { AlertCircle, Check, ClipboardList, GraduationCap, LoaderCircle, Pencil, Plus, RotateCcw, Search, UserRoundCheck, UserRoundX, UsersRound, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { TopBar, type SearchResult } from '@/components/layout/TopBar'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
@@ -33,6 +34,7 @@ const dateLabel = (date: string) => {
 }
 
 export function StudentsPage() {
+  const navigate = useNavigate()
   const [students, setStudents] = useState<Student[]>([])
   const [classes, setClasses] = useState<SchoolClass[]>([])
   const [activeSection, setActiveSection] = useState<'students' | 'classes'>('students')
@@ -287,14 +289,14 @@ export function StudentsPage() {
       <Sidebar onUnavailable={showUnavailable} activePage="students" />
       <div className="workspace">
         <TopBar
+          showSearch={false}
           query={query}
           results={searchResults}
           searching={loading && query.length >= 2}
           onQueryChange={(value) => { setQuery(value); setPage(0) }}
           onUnavailable={showUnavailable}
           onResultSelect={(result) => {
-            const student = students.find((item) => item.id === result.id)
-            if (student) openStudent(student)
+            navigate(`/alunos/${encodeURIComponent(result.id)}`)
           }}
         />
         <main className="dashboard-surface students-surface">
@@ -338,6 +340,8 @@ export function StudentsPage() {
                 <h2><span className="round-heading-icon"><UsersRound aria-hidden="true" /></span>Lista de alunos</h2>
                 <span className="students-total">{filteredStudentCount} cadastro{filteredStudentCount === 1 ? '' : 's'}</span>
               </div>
+              <section className="students-find-student-panel">
+                <div className="students-find-student-heading"><span><UsersRound aria-hidden="true" /></span><h2>Encontre um aluno</h2><p>Busque pelo nome ou use os filtros para localizar um aluno.</p></div>
               <div className="students-filters" role="group" aria-label="Filtros da lista de alunos">
                 <div className="students-filter-field students-filter-search">
                   <Label htmlFor="students-filter-name">Nome do aluno</Label>
@@ -359,17 +363,18 @@ export function StudentsPage() {
                 </div>
                 <Button type="button" variant="outline" className="students-filter-clear" onClick={clearFilters} disabled={!hasActiveFilters}><RotateCcw aria-hidden="true" />Limpar</Button>
               </div>
+              </section>
               {loading ? <div className="students-loading"><LoaderCircle className="h-5 w-5 animate-spin" />Carregando alunos…</div> : students.length === 0 ? <div className="students-empty-list"><h3>{hasActiveFilters ? 'Nenhum aluno encontrado' : 'Ainda não há alunos cadastrados'}</h3><p>{hasActiveFilters ? 'Ajuste os filtros ou faça uma nova busca.' : 'Cadastre o primeiro aluno para começar a organizar os atendimentos.'}</p>{!hasActiveFilters && <Button onClick={openNewStudent} className="register-button mt-5 gap-2"><Plus aria-hidden="true" />Cadastrar aluno</Button>}</div> : (
                 <div className="overflow-x-auto">
                   <table className="students-table">
                     <thead><tr><th>Aluno</th><th>Turma</th><th>Nascimento</th><th>Contato</th><th>Situação</th><th className="text-right">Ações</th></tr></thead>
                     <tbody>{students.map((student) => <tr key={student.id}>
-                      <td><div className="flex items-center gap-3"><AvatarBadge name={student.nome} tone="blue" size="md" /><div><p className="student-row-name">{student.nome}</p><p className="student-row-school">{student.nomeEscola}</p></div></div></td>
+                      <td><button type="button" className="student-profile-row-link" onClick={() => navigate(`/alunos/${encodeURIComponent(student.id)}`)}><AvatarBadge name={student.nome} tone="blue" size="md" /><span><p className="student-row-name">{student.nome}</p><p className="student-row-school">{student.nomeEscola}</p></span></button></td>
                       <td>{student.nomeTurma}</td>
                       <td>{dateLabel(student.dataNascimento)}</td>
                       <td>{student.telefone || student.email || '—'}</td>
                       <td><span className={`student-status ${student.ativo ? 'is-active' : 'is-inactive'}`}>{student.ativo ? 'Ativo' : 'Inativo'}</span></td>
-                      <td><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Editar ${student.nome}`} aria-label={`Editar ${student.nome}`} onClick={() => openStudent(student)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={student.ativo ? 'Desativar cadastro' : 'Reativar cadastro'} aria-label={student.ativo ? `Desativar ${student.nome}` : `Reativar ${student.nome}`} disabled={changingStatus === student.id} onClick={() => void changeActive(student)} className="text-[#59689d] hover:bg-white/70">{student.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
+                      <td><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Registrar atendimento de ${student.nome}`} aria-label={`Registrar atendimento de ${student.nome}`} onClick={() => navigate(`/registro-atendimento?alunoId=${encodeURIComponent(student.id)}`)} className="text-[#59689d] hover:bg-white/70"><ClipboardList className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={`Editar ${student.nome}`} aria-label={`Editar ${student.nome}`} onClick={() => openStudent(student)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={student.ativo ? 'Desativar cadastro' : 'Reativar cadastro'} aria-label={student.ativo ? `Desativar ${student.nome}` : `Reativar ${student.nome}`} disabled={changingStatus === student.id} onClick={() => void changeActive(student)} className="text-[#59689d] hover:bg-white/70">{student.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
                     </tr>)}</tbody>
                   </table>
                 </div>

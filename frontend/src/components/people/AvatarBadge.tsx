@@ -19,7 +19,8 @@ export function AvatarBadge({
 }: AvatarBadgeProps) {
   const rawId = useId()
   const clipId = `avatar-${rawId.replace(/:/g, '')}`
-  const profile = AVATAR_PROFILES[name.toLocaleLowerCase('pt-BR')] ?? FALLBACK_AVATAR_PROFILE
+  const namedProfile = AVATAR_PROFILES[name.toLocaleLowerCase('pt-BR')]
+  const profile = namedProfile ?? FALLBACK_AVATAR_PROFILE
 
   return (
     <span
@@ -27,7 +28,7 @@ export function AvatarBadge({
       title={name}
       aria-label={`Avatar de ${name}`}
     >
-      <svg
+      {namedProfile ? <svg
         className="illustrated-avatar"
         viewBox="0 0 64 64"
         aria-hidden="true"
@@ -129,7 +130,15 @@ export function AvatarBadge({
             </g>
           )}
         </g>
-      </svg>
+      </svg> : <svg className="illustrated-avatar" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id={`${clipId}-silhouette-bg`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#d8e9ff" /><stop offset="1" stopColor="#e9ddff" /></linearGradient>
+          <linearGradient id={`${clipId}-silhouette`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#7183d8" /><stop offset="1" stopColor="#5567b8" /></linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="32" fill={`url(#${clipId}-silhouette-bg)`} />
+        <circle cx="32" cy="25" r="12" fill={`url(#${clipId}-silhouette)`} />
+        <path d="M10 64c1-14 9-22 22-22s21 8 22 22H10Z" fill={`url(#${clipId}-silhouette)`} />
+      </svg>}
     </span>
   )
 }

@@ -18,6 +18,7 @@ interface TopBarProps {
   onQueryChange: (query: string) => void
   onUnavailable: (feature: string) => void
   onResultSelect?: (result: SearchResult) => void
+  showSearch?: boolean
 }
 
 export function TopBar({
@@ -27,6 +28,7 @@ export function TopBar({
   onQueryChange,
   onUnavailable,
   onResultSelect,
+  showSearch = true,
 }: TopBarProps) {
   const showResults = query.trim().length >= 2
   const { user, signOut } = useAuth()
@@ -42,7 +44,7 @@ export function TopBar({
       <div className="mobile-brand">
         <img src="/aee-conecta-logo.png" alt="AEE Conecta" />
       </div>
-      <div className="dashboard-search">
+      {showSearch ? <div className="dashboard-search">
         <Search aria-hidden="true" />
         <label className="sr-only" htmlFor="dashboard-search-input">
           Buscar aluno, RA, escola ou qualquer informação
@@ -80,7 +82,7 @@ export function TopBar({
             )}
           </div>
         )}
-      </div>
+      </div> : <div className="dashboard-search dashboard-search-spacer" aria-hidden="true" />}
       <div className="topbar-actions">
         <Button
           variant="ghost"
