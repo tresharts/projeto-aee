@@ -171,7 +171,7 @@ export function DashboardPage() {
                     <SchoolReturnsPanel
                       returns={data.schoolReturns}
                       state={data.schoolReturnsState}
-                      onUnavailable={showUnavailable}
+                      onViewAll={() => navigate('/retornos')}
                     />
                   </div>
                   <div className="widgets-bottom">

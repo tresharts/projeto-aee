@@ -11,13 +11,13 @@ import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 interface SchoolReturnsPanelProps {
   returns: SchoolReturn[]
   state: IntegrationState
-  onUnavailable: (feature: string) => void
+  onViewAll: () => void
 }
 
 export function SchoolReturnsPanel({
   returns,
   state,
-  onUnavailable,
+  onViewAll,
 }: SchoolReturnsPanelProps) {
   return (
     <section className="school-returns-panel" aria-labelledby="returns-heading">
@@ -31,7 +31,7 @@ export function SchoolReturnsPanel({
         <Button
           variant="ghost"
           type="button"
-          onClick={() => onUnavailable('Os retornos completos')}
+          onClick={onViewAll}
         >
           ver todos <span aria-hidden="true">›</span>
         </Button>

@@ -31,6 +31,11 @@ public class FormularioExternoController {
         return ResponseEntity.ok(formularioService.retornosRecentes(professor));
     }
 
+    @GetMapping("/responses/all")
+    public ResponseEntity<List<FormularioRespostaCompletaResponse>> respostasDaEscola(@AuthenticationPrincipal Professor professor) {
+        return ResponseEntity.ok(formularioService.respostasDaEscola(professor));
+    }
+
     @PostMapping("/generate")
     public ResponseEntity<FormularioGerarResponse> gerar(
             @AuthenticationPrincipal Professor professor,

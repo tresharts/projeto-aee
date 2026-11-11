@@ -93,6 +93,26 @@ public class FormularioExternoService {
 
     @Transactional(readOnly = true)
     public List<RetornoRecenteResponse> retornosRecentes(Professor professor) {
+        return formulariosRespondidos(professor, 5).stream().map(formulario -> {
+            Aluno aluno = alunoRepository.findById(formulario.getAlunoId()).orElseThrow();
+            String mensagem = formulario.getRespostas().stream().filter(texto -> !texto.isBlank())
+                    .findFirst().orElse("Resposta recebida para " + aluno.getNome());
+            return new RetornoRecenteResponse(formulario.getId(), aluno.getId(), aluno.getNome(),
+                    "Professor da escola regular", mensagem, formulario.getDataResposta());
+        }).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<FormularioRespostaCompletaResponse> respostasDaEscola(Professor professor) {
+        return formulariosRespondidos(professor, 100).stream().map(formulario -> {
+            Aluno aluno = alunoRepository.findById(formulario.getAlunoId()).orElseThrow();
+            return new FormularioRespostaCompletaResponse(formulario.getId(), aluno.getId(),
+                    aluno.getNome(), formulario.getPerguntas(), formulario.getRespostas(),
+                    formulario.getDataResposta());
+        }).toList();
+    }
+
+    private List<FormularioExterno> formulariosRespondidos(Professor professor, int limite) {
         if (professor.getEscolaId() == null) return List.of();
         List<UUID> turmaIds = turmaRepository.findByEscolaId(professor.getEscolaId()).stream()
                 .map(turma -> turma.getId()).toList();
@@ -100,13 +120,7 @@ public class FormularioExternoService {
         List<UUID> alunoIds = alunoRepository.findIdsByTurmaIdIn(turmaIds);
         if (alunoIds.isEmpty()) return List.of();
         return formularioRepository.findByAlunoIdInAndDataRespostaIsNotNullOrderByDataRespostaDesc(
-                alunoIds, PageRequest.of(0, 5)).stream().map(formulario -> {
-            Aluno aluno = alunoRepository.findById(formulario.getAlunoId()).orElseThrow();
-            String mensagem = formulario.getRespostas().stream().filter(texto -> !texto.isBlank())
-                    .findFirst().orElse("Resposta recebida para " + aluno.getNome());
-            return new RetornoRecenteResponse(formulario.getId(), aluno.getId(), aluno.getNome(),
-                    "Professor da escola regular", mensagem, formulario.getDataResposta());
-        }).toList();
+                alunoIds, PageRequest.of(0, limite));
     }
 
     private FormularioExterno buscarFormulario(String token) {
