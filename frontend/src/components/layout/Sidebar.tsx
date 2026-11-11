@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar'
+  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar' | 'external-form'
 }
 
 const navigation = [

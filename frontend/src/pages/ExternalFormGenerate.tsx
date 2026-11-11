@@ -5,6 +5,9 @@ import { gerarLink } from '@/lib/external-form.service'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Sidebar } from '@/components/layout/Sidebar'
+import { TopBar } from '@/components/layout/TopBar'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import {
   Select,
   SelectContent,
@@ -26,6 +29,7 @@ export function ExternalFormGenerate() {
   const [gerando, setGerando] = useState(false)
   const [linkGerado, setLinkGerado] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
+  const [notice, setNotice] = useState('')
 
   const carregarAlunos = useCallback(async () => {
     try {
@@ -81,8 +85,12 @@ export function ExternalFormGenerate() {
   }, [linkGerado])
 
   return (
-    <div className="min-h-screen bg-[#edf3ff] p-4 sm:p-6 md:p-8">
-      <div className="mx-auto max-w-3xl">
+    <div className="app-shell external-form-shell">
+      <Sidebar activePage="external-form" onUnavailable={(feature) => setNotice(`${feature} estará disponível em breve.`)} />
+      <div className="workspace">
+        <TopBar showSearch={false} query="" results={[]} searching={false} onQueryChange={() => undefined} onUnavailable={(feature) => setNotice(`${feature} estará disponível em breve.`)} />
+        <main className="dashboard-surface">
+          <div className="mx-auto max-w-3xl">
         <Card className="border-0 bg-white p-5 shadow-[0_18px_51px_rgba(68,91,131,0.09)] sm:rounded-[28px] sm:p-8">
           <header className="mb-7 flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#eaf0ff] text-[#5363ae]">
@@ -159,7 +167,11 @@ export function ExternalFormGenerate() {
             </section>
           )}
         </Card>
+          </div>
+        </main>
       </div>
+      <BottomNavigation activePage="external-form" onUnavailable={(feature) => setNotice(`${feature} estará disponível em breve.`)} />
+      {notice && <div className="availability-toast" role="status">{notice}</div>}
     </div>
   )
 }
