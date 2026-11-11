@@ -1,10 +1,7 @@
 import { CalendarDays, Pause, Play } from 'lucide-react'
-import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { getDayPeriod } from '@/lib/date'
 import type {
   Appointment,
-  DayPeriod,
   IntegrationState,
 } from '../dashboard.types'
 import { AvatarBadge } from '@/components/people/AvatarBadge'
@@ -13,15 +10,12 @@ import { IntegrationPlaceholder } from './IntegrationPlaceholder'
 interface AgendaPanelProps {
   appointments: Appointment[]
   state: IntegrationState
+  days: Array<{ key: string; label: string; date: string; fullLabel: string; today: boolean }>
+  selectedDate: string
+  onSelectDate: (date: string) => void
   onViewCalendar: () => void
   onStartAttendance: (appointment: Appointment) => void
 }
-
-const filters: Array<{ id: DayPeriod; label: string }> = [
-  { id: 'all', label: 'Todos' },
-  { id: 'morning', label: 'Manhã' },
-  { id: 'afternoon', label: 'Tarde' },
-]
 
 function tagClassName(tag: string) {
   const normalized = tag.toLocaleLowerCase('pt-BR')
@@ -35,19 +29,12 @@ function tagClassName(tag: string) {
 export function AgendaPanel({
   appointments,
   state,
+  days,
+  selectedDate,
+  onSelectDate,
   onViewCalendar,
   onStartAttendance,
 }: AgendaPanelProps) {
-  const [period, setPeriod] = useState<DayPeriod>('all')
-  const visibleAppointments = useMemo(
-    () =>
-      appointments.filter(
-        (appointment) =>
-          period === 'all' || getDayPeriod(appointment.time) === period,
-      ),
-    [appointments, period],
-  )
-
   return (
     <section className="agenda-panel" aria-labelledby="agenda-heading">
       <div className="panel-heading agenda-heading-row">
@@ -55,7 +42,7 @@ export function AgendaPanel({
           <span className="round-heading-icon">
             <CalendarDays aria-hidden="true" />
           </span>
-          Agenda do dia
+          Agenda da semana
         </h2>
         <Button
           variant="ghost"
@@ -67,28 +54,30 @@ export function AgendaPanel({
         </Button>
       </div>
 
-      <div className="agenda-filters" aria-label="Filtrar agenda por período">
-        {filters.map((filter) => (
+      <div className="agenda-filters agenda-weekdays" role="group" aria-label="Escolher dia da semana">
+        {days.map((day) => (
           <Button
             variant="ghost"
-            className={period === filter.id ? 'selected' : ''}
-            key={filter.id}
+            className={`${selectedDate === day.key ? 'selected' : ''} ${day.today ? 'today' : ''}`}
+            key={day.key}
             type="button"
-            aria-pressed={period === filter.id}
-            onClick={() => setPeriod(filter.id)}
+            aria-label={day.fullLabel}
+            aria-pressed={selectedDate === day.key}
+            onClick={() => onSelectDate(day.key)}
           >
-            {filter.label}
+            <span>{day.label}</span>
+            <strong>{day.date}</strong>
           </Button>
         ))}
       </div>
 
       {state === 'pending' ? (
         <IntegrationPlaceholder title="Agenda ainda não integrada" />
-      ) : visibleAppointments.length === 0 ? (
-        <div className="agenda-empty">Nenhum atendimento neste período.</div>
+      ) : appointments.length === 0 ? (
+        <div className="agenda-empty">Nenhuma sessão agendada para este dia.</div>
       ) : (
         <div className="appointments-list">
-          {visibleAppointments.map((appointment) => (
+          {appointments.map((appointment) => (
             <article className="appointment-row" key={appointment.id}>
               <time>{appointment.time}</time>
               <AvatarBadge

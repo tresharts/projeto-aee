@@ -23,6 +23,10 @@ import type { DashboardAlert } from './dashboard.types'
 import { useDashboardData } from './useDashboardData'
 import { getConsecutiveAbsenceAlerts, getScheduledSessions, type ScheduledSession } from '@/features/calendar/calendar.service'
 
+function localDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 export function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -31,19 +35,36 @@ export function DashboardPage() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [notice, setNotice] = useState('')
-  const [todaySessions, setTodaySessions] = useState<ScheduledSession[] | null>(null)
+  const [weekSessions, setWeekSessions] = useState<ScheduledSession[] | null>(null)
   const [absenceAlerts, setAbsenceAlerts] = useState<DashboardAlert[] | null>(null)
   const formattedDate = useMemo(() => formatDashboardDate(new Date()), [])
-  const todayKey = useMemo(() => {
-    const today = new Date()
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-  }, [])
+  const todayKey = useMemo(() => localDateKey(new Date()), [])
+  const [selectedDateKey, setSelectedDateKey] = useState(todayKey)
+  const weekDays = useMemo(() => {
+    const monday = new Date(`${todayKey}T12:00:00`)
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7)
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
+    const fullFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
+    return labels.map((label, index) => {
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + index)
+      return {
+        key: localDateKey(date),
+        label,
+        date: String(date.getDate()).padStart(2, '0'),
+        fullLabel: fullFormatter.format(date),
+        today: localDateKey(date) === todayKey,
+      }
+    })
+  }, [todayKey])
 
   useEffect(() => {
-    void getScheduledSessions(todayKey, todayKey)
-      .then(setTodaySessions)
-      .catch(() => setTodaySessions([]))
-  }, [todayKey])
+    let active = true
+    void getScheduledSessions(weekDays[0].key, weekDays[6].key)
+      .then((sessions) => { if (active) setWeekSessions(sessions) })
+      .catch(() => { if (active) setWeekSessions([]) })
+    return () => { active = false }
+  }, [weekDays])
 
   useEffect(() => {
     void getConsecutiveAbsenceAlerts()
@@ -56,7 +77,9 @@ export function DashboardPage() {
       .catch(() => setAbsenceAlerts([]))
   }, [])
 
-  const agendaAppointments: Appointment[] = todaySessions?.filter((session) => session.status !== 'CANCELADA').map((session, index) => ({
+  const agendaAppointments: Appointment[] = weekSessions?.filter((session) =>
+    session.dataHora.slice(0, 10) === selectedDateKey && session.status !== 'CANCELADA',
+  ).map((session, index) => ({
     id: session.id,
     sessionId: session.id,
     studentId: session.alunoId,
@@ -67,7 +90,7 @@ export function DashboardPage() {
     tags: [],
     avatarTone: (['blue', 'yellow', 'orange', 'pink', 'green'] as const)[index % 5],
     status: session.status === 'REALIZADA' ? 'Realizado' : session.status === 'FALTA' ? 'Falta' : session.status === 'CANCELADA' ? 'Cancelado' : 'Aguardando',
-  })) ?? data?.appointments ?? []
+  })) ?? []
 
   useEffect(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
@@ -181,11 +204,14 @@ export function DashboardPage() {
                 <div className="agenda-column">
                   <AgendaPanel
                     appointments={agendaAppointments}
-                    state={todaySessions === null ? 'pending' : agendaAppointments.length ? 'available' : 'empty'}
-                    onViewCalendar={() => navigate('/calendario')}
+                    state={weekSessions === null ? 'pending' : agendaAppointments.length ? 'available' : 'empty'}
+                    days={weekDays}
+                    selectedDate={selectedDateKey}
+                    onSelectDate={setSelectedDateKey}
+                    onViewCalendar={() => navigate(`/calendario?data=${selectedDateKey}`)}
                     onStartAttendance={(appointment) => {
                       if (!appointment.studentId || !appointment.sessionId || !appointment.sessionDateTime) {
-                        navigate(`/calendario?data=${todayKey}`)
+                        navigate(`/calendario?data=${selectedDateKey}`)
                         return
                       }
                       navigate(`/registro-atendimento?alunoId=${encodeURIComponent(appointment.studentId)}&sessaoId=${encodeURIComponent(appointment.sessionId)}&dataHora=${encodeURIComponent(appointment.sessionDateTime)}`)

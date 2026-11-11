@@ -1,5 +1,4 @@
 export type DashboardDataMode = 'demo' | 'api'
-export type DayPeriod = 'all' | 'morning' | 'afternoon'
 export type IntegrationState = 'available' | 'pending' | 'empty'
 
 export interface MetricItem {

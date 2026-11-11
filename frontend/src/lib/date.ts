@@ -34,8 +34,3 @@ export function formatShortDate(value: string) {
 
   return Number.isNaN(date.getTime()) ? '—' : shortDateFormatter.format(date)
 }
-
-export function getDayPeriod(time: string): 'morning' | 'afternoon' {
-  const hour = Number.parseInt(time.split(':')[0] ?? '0', 10)
-  return hour < 12 ? 'morning' : 'afternoon'
-}
