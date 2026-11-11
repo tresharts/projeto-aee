@@ -3,13 +3,13 @@ import {
   CalendarDays,
   ClipboardCheck,
   RotateCcw,
-  TriangleAlert,
+  UsersRound,
 } from 'lucide-react'
 import type { MetricItem } from '../dashboard.types'
 
 const iconByMetric = {
   appointments: CalendarDays,
-  'attendance-alert': TriangleAlert,
+  'attendance-alert': UsersRound,
   pei: ClipboardCheck,
   'school-returns': RotateCcw,
 } as const

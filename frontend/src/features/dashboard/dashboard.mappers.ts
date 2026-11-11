@@ -94,7 +94,7 @@ export function mapApiPayloadToDashboard(
         value: String(payload.students.totalElements),
         description: 'alunos da escola',
         progress: payload.students.totalElements ? 100 : 0,
-        tone: 'red',
+        tone: 'purple',
         available: true,
       },
       {
