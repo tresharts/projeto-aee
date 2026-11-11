@@ -7,7 +7,7 @@ import { TopBar, type SearchResult } from '@/components/layout/TopBar'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { AvatarBadge } from '@/components/people/AvatarBadge'
 import { Button } from '@/components/ui/button'
-import { ApiError } from '@/lib/api'
+import { ApiError, apiFetchBlob } from '@/lib/api'
 import { getSchoolSetup, getStudent, getStudents, setStudentActive, updateStudent } from './student.service'
 import type { SchoolClass, Student, StudentDraft } from './student.types'
 import { createPeiObjective, getAttendances, getPeiObjectives } from '@/features/attendance/attendance.service'
@@ -38,6 +38,7 @@ export function StudentProfilePage() {
   const [documentType, setDocumentType] = useState<TipoDocumento>('LAUDO')
   const [uploading, setUploading] = useState(false)
   const [documentBusy, setDocumentBusy] = useState<string | null>(null)
+  const [downloadingReport, setDownloadingReport] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   useEffect(() => {
     let active = true
@@ -126,6 +127,17 @@ export function StudentProfilePage() {
     } catch (cause) { setError(cause instanceof ApiError ? cause.message : 'Não foi possível baixar o documento.') }
     finally { setDocumentBusy(null) }
   }
+  const downloadReport = async () => {
+    if (!student || downloadingReport) return
+    setDownloadingReport(true); setError('')
+    try {
+      const blob = await apiFetchBlob('/api/relatorios/alunos/' + encodeURIComponent(student.id), { method: 'POST' })
+      const url = URL.createObjectURL(blob); const link = window.document.createElement('a')
+      link.href = url; link.download = 'relatorio-' + student.nome.toLocaleLowerCase('pt-BR').replaceAll(/[^a-z0-9]+/g, '-') + '.pdf'
+      link.click(); URL.revokeObjectURL(url)
+    } catch (cause) { setError(cause instanceof ApiError ? cause.message : 'Não foi possível gerar o relatório.') }
+    finally { setDownloadingReport(false) }
+  }
   const removeDocument = async (document: Documento) => {
     if (!window.confirm('Remover ' + document.nomeArquivo + '?')) return
     setDocumentBusy(document.id); setError('')
@@ -153,6 +165,7 @@ export function StudentProfilePage() {
             <div className="student-profile-title"><h1 className="app-gradient-title">{student.nome}</h1><p>{student.nomeEscola} · {student.nomeTurma}</p></div>
             <span className={'student-status ' + (student.ativo ? 'is-active' : 'is-inactive')}>{student.ativo ? 'Ativo' : 'Inativo'}</span>
             <Button variant="outline" disabled={changingStatus} onClick={() => void toggleStudentStatus()}>{student.ativo ? <><UserRoundX aria-hidden="true" />Desativar aluno</> : <><UserRoundCheck aria-hidden="true" />Reativar aluno</>}</Button>
+            <Button variant="outline" disabled={downloadingReport} onClick={() => void downloadReport()}><ArrowDownToLine aria-hidden="true" />{downloadingReport ? 'Gerando PDF…' : 'Baixar relatório'}</Button>
             <Button className="register-button student-profile-action" onClick={() => navigate('/registro-atendimento?alunoId=' + encodeURIComponent(student.id))}><Plus aria-hidden="true" />Novo atendimento</Button>
           </header>
           <section className="student-profile-grid">

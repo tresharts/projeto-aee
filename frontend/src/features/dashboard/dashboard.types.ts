@@ -113,6 +113,7 @@ export interface DashboardResponse {
   agendaDoDia: AtendimentoHoje[]
   alertas: AlertaAutomatico[]
   feedRetornos: RetornoEscola[]
+  objetivosPeiAtivos?: number
 }
 
 export interface AtendimentoHoje {

@@ -1,6 +1,7 @@
 import { CalendarDays, Plus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/auth/useAuth'
 import { Button } from '@/components/ui/button'
 import { AgendaPanel } from './components/AgendaPanel'
 import { AlertsPanel } from './components/AlertsPanel'
@@ -16,7 +17,6 @@ import {
   type SearchResult,
 } from '@/components/layout/TopBar'
 import { formatDashboardDate } from '@/lib/date'
-import { dashboardDemoData } from './dashboard.mock'
 import { searchStudentsByName } from './dashboard.service'
 import type { ApiStudent, Appointment } from './dashboard.types'
 import type { DashboardAlert } from './dashboard.types'
@@ -25,7 +25,8 @@ import { getConsecutiveAbsenceAlerts, getScheduledSessions, type ScheduledSessio
 
 export function DashboardPage() {
   const navigate = useNavigate()
-  const { status, data, mode, message, retry } = useDashboardData()
+  const { user } = useAuth()
+  const { status, data, message, retry } = useDashboardData()
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
@@ -76,22 +77,6 @@ export function DashboardPage() {
       return
     }
 
-    if (mode === 'demo') {
-      const results = dashboardDemoData.appointments
-        .filter((appointment) =>
-          `${appointment.studentName} ${appointment.schoolName}`
-            .toLocaleLowerCase('pt-BR')
-            .includes(normalizedQuery),
-        )
-        .map((appointment) => ({
-          id: appointment.id,
-          name: appointment.studentName,
-          detail: appointment.schoolName,
-        }))
-      setSearchResults(results)
-      return
-    }
-
     let active = true
     setSearching(true)
     const timer = window.setTimeout(() => {
@@ -118,7 +103,7 @@ export function DashboardPage() {
       active = false
       window.clearTimeout(timer)
     }
-  }, [mode, query])
+  }, [query])
 
   useEffect(() => {
     if (!notice) return
@@ -140,6 +125,7 @@ export function DashboardPage() {
           searching={searching}
           onQueryChange={setQuery}
           onUnavailable={showUnavailable}
+          onResultSelect={(result) => navigate('/alunos/' + encodeURIComponent(result.id))}
         />
         <main className="dashboard-surface">
           {status !== 'ready' || !data ? (
@@ -152,7 +138,7 @@ export function DashboardPage() {
             <>
               <div className="welcome-row">
                 <div className="welcome-copy">
-                  <h1 className="app-gradient-title">Olá, Professora {data.teacherName}!</h1>
+                  <h1 className="app-gradient-title">Olá, {user?.name ?? 'Professora'}!</h1>
                   <p>É um prazer ter você aqui no AEE Conecta</p>
                 </div>
                 <div className="welcome-actions">
@@ -166,7 +152,7 @@ export function DashboardPage() {
                     variant="ghost"
                     className="register-button"
                     type="button"
-                    onClick={() => showUnavailable('O registro de atendimento avulso')}
+                    onClick={() => navigate('/registro-atendimento')}
                   >
                     <Plus aria-hidden="true" />
                     registrar atendimento avulso

@@ -15,8 +15,6 @@ export function PedagogicalPanel({
   state,
 }: PedagogicalPanelProps) {
   const attendanceRate = indicator.attendanceRate ?? 0
-  const municipalTarget = indicator.municipalTarget ?? 0
-  const targetDifference = Math.round(attendanceRate - municipalTarget)
   const firstWeek = indicator.weeklyFrequency[0]
   const lastWeek = indicator.weeklyFrequency[indicator.weeklyFrequency.length - 1]
   const weeklyDifference =
@@ -53,21 +51,8 @@ export function PedagogicalPanel({
               </div>
             </div>
             <div className="indicator-kpis">
-              <div>
-                <span>Meta Municipal</span>
-                <strong>{municipalTarget.toFixed(0)}%</strong>
-                <small>
-                  {targetDifference > 0
-                    ? `+${targetDifference} pontos acima da meta`
-                    : targetDifference < 0
-                      ? `${targetDifference} pontos abaixo da meta`
-                      : 'na meta'}
-                </small>
-              </div>
-              <div className="indicator-kpi--single-line">
-                <span>Faltas justificadas</span>
-                <strong>{indicator.justifiedAbsenceRate?.toFixed(0)}%</strong>
-              </div>
+              <div><span>Registros analisados</span><strong>{indicator.weeklyFrequency.length} semanas</strong></div>
+              <div className="indicator-kpi--single-line"><span>Presença registrada</span><strong>{attendanceRate}%</strong></div>
             </div>
           </div>
 
@@ -78,7 +63,7 @@ export function PedagogicalPanel({
             </div>
             <div>
               <CircleDot aria-hidden="true" />
-              <strong>{indicator.atRiskStudents} em risco</strong>
+              <strong>{indicator.atRiskStudents ?? 0} em acompanhamento</strong>
             </div>
             <div>
               <Target aria-hidden="true" />

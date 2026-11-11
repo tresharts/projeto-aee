@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/external-form")
@@ -23,6 +24,11 @@ public class FormularioExternoController {
 
     public FormularioExternoController(FormularioExternoService formularioService) {
         this.formularioService = formularioService;
+    }
+
+    @GetMapping("/responses/recent")
+    public ResponseEntity<List<RetornoRecenteResponse>> retornosRecentes(@AuthenticationPrincipal Professor professor) {
+        return ResponseEntity.ok(formularioService.retornosRecentes(professor));
     }
 
     @PostMapping("/generate")

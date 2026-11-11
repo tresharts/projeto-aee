@@ -18,6 +18,31 @@ export function mapApiPayloadToDashboard(
   payload: DashboardApiPayload,
 ): DashboardData {
   const { agendaDoDia, alertas, feedRetornos } = payload.dashboardResponse
+  const attendances = payload.attendances.content
+  const attended = attendances.filter((record) => record.presente).length
+  const attendanceRate = attendances.length ? Math.round(attended / attendances.length * 100) : 0
+  const lastRecordsByStudent = new Map<string, typeof attendances>()
+  for (const record of attendances) {
+    const records = lastRecordsByStudent.get(record.alunoId) ?? []
+    if (records.length < 3) records.push(record)
+    lastRecordsByStudent.set(record.alunoId, records)
+  }
+  const atRiskStudents = [...lastRecordsByStudent.values()]
+    .filter((records) => records.length === 3 && records.every((record) => !record.presente)).length
+  const today = new Date()
+  const weeklyFrequency = Array.from({ length: 5 }, (_, index) => {
+    const end = new Date(today)
+    end.setHours(23, 59, 59, 999)
+    end.setDate(end.getDate() - (4 - index) * 7)
+    const start = new Date(end)
+    start.setDate(start.getDate() - 6)
+    start.setHours(0, 0, 0, 0)
+    const week = attendances.filter((record) => {
+      const date = new Date(record.dataHora)
+      return date >= start && date <= end
+    })
+    return week.length ? Math.round(week.filter((record) => record.presente).length / week.length * 100) : 0
+  })
 
   const appointments: Appointment[] = agendaDoDia.map((atendimento, index) => ({
     id: atendimento.alunoId,
@@ -57,35 +82,35 @@ export function mapApiPayloadToDashboard(
       {
         id: 'appointments',
         title: 'Atendimentos registrados',
-        value: String(agendaDoDia.length),
-        description: 'atendimentos realizados hoje',
-        progress: hasAppointments ? 100 : 0,
+        value: String(payload.attendances.totalElements),
+        description: 'registros da escola',
+        progress: payload.attendances.totalElements ? 100 : 0,
         tone: 'blue',
         available: true,
       },
       {
         id: 'attendance-alert',
         title: 'Alunos cadastrados',
-        value: String(agendaDoDia.length),
-        description: 'alunos atendidos hoje',
-        progress: 0,
+        value: String(payload.students.totalElements),
+        description: 'alunos da escola',
+        progress: payload.students.totalElements ? 100 : 0,
         tone: 'red',
         available: true,
       },
       {
         id: 'pei',
-        title: 'PEIs (Laudos a vencer)',
-        value: '—',
-        description: 'integração pendente',
-        progress: 0,
+        title: 'Objetivos do PEI',
+        value: String(payload.dashboardResponse.objetivosPeiAtivos ?? 0),
+        description: 'objetivos ativos',
+        progress: payload.dashboardResponse.objetivosPeiAtivos ? 100 : 0,
         tone: 'yellow',
-        available: false,
+        available: true,
       },
       {
         id: 'school-returns',
         title: 'Retornos das escolas',
         value: String(feedRetornos.length),
-        description: 'novos retornos nas últimas 24h',
+        description: 'respostas recebidas',
         progress: hasReturns ? 100 : 0,
         tone: 'purple',
         available: true,
@@ -95,12 +120,15 @@ export function mapApiPayloadToDashboard(
     alerts,
     schoolReturns,
     indicator: {
-      weeklyFrequency: [],
-      available: false,
+      attendanceRate,
+      activeStudents: payload.students.content.filter((student) => student.ativo).length,
+      atRiskStudents,
+      weeklyFrequency,
+      available: attendances.length > 0,
     },
     agendaState: hasAppointments ? 'available' : 'empty',
     alertsState: hasAlerts ? 'available' : 'empty',
     schoolReturnsState: hasReturns ? 'available' : 'empty',
-    indicatorState: 'pending',
+    indicatorState: attendances.length ? 'available' : 'empty',
   }
 }

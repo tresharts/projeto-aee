@@ -9,6 +9,7 @@ import com.art.aee.formulario.dto.FormularioPublicoResponse;
 import com.art.aee.formulario.dto.FormularioRespostaRequest;
 import com.art.aee.professor.Professor;
 import com.art.aee.turma.TurmaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +89,24 @@ public class FormularioExternoService {
         formulario.setRespostas(request.respostas().stream().map(String::trim).toList());
         formulario.setDataResposta(LocalDateTime.now());
         formularioRepository.save(formulario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RetornoRecenteResponse> retornosRecentes(Professor professor) {
+        if (professor.getEscolaId() == null) return List.of();
+        List<UUID> turmaIds = turmaRepository.findByEscolaId(professor.getEscolaId()).stream()
+                .map(turma -> turma.getId()).toList();
+        if (turmaIds.isEmpty()) return List.of();
+        List<UUID> alunoIds = alunoRepository.findIdsByTurmaIdIn(turmaIds);
+        if (alunoIds.isEmpty()) return List.of();
+        return formularioRepository.findByAlunoIdInAndDataRespostaIsNotNullOrderByDataRespostaDesc(
+                alunoIds, PageRequest.of(0, 5)).stream().map(formulario -> {
+            Aluno aluno = alunoRepository.findById(formulario.getAlunoId()).orElseThrow();
+            String mensagem = formulario.getRespostas().stream().filter(texto -> !texto.isBlank())
+                    .findFirst().orElse("Resposta recebida para " + aluno.getNome());
+            return new RetornoRecenteResponse(formulario.getId(), aluno.getId(), aluno.getNome(),
+                    "Professor da escola regular", mensagem, formulario.getDataResposta());
+        }).toList();
     }
 
     private FormularioExterno buscarFormulario(String token) {

@@ -7,29 +7,23 @@ import type {
 } from './dashboard.types'
 
 export async function getDashboardApiPayload(): Promise<DashboardApiPayload> {
-  const response = await apiFetch<DashboardResponse>('/api/dashboard')
-
+  const [students, attendances, returns] = await Promise.all([
+    apiFetch<SpringPage<ApiStudent>>('/api/alunos?page=0&size=100&sort=nome,asc'),
+    apiFetch<DashboardApiPayload['attendances']>('/api/atendimentos?page=0&size=500&sort=dataHora,desc'),
+    apiFetch<Array<{ id: string; alunoId: string; nomeAluno: string; nomeProfessorEscola: string; mensagem: string; dataEnvio: string }>>('/api/external-form/responses/recent'),
+  ])
+  const objectiveLists = await Promise.all(students.content.map((student) =>
+    apiFetch<Array<{ id: string }>>(`/api/alunos/${student.id}/objetivos-pei`),
+  ))
+  const response: DashboardResponse = {
+    agendaDoDia: [],
+    alertas: [],
+    feedRetornos: returns.map((item) => ({ ...item, escola: 'Escola regular' })),
+    objetivosPeiAtivos: objectiveLists.reduce((sum, list) => sum + list.length, 0),
+  }
   return {
-    students: {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
-      number: 0,
-      size: 0,
-      first: true,
-      last: true,
-      empty: true,
-    },
-    attendances: {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
-      number: 0,
-      size: 0,
-      first: true,
-      last: true,
-      empty: true,
-    },
+    students,
+    attendances,
     dashboardResponse: response,
   }
 }

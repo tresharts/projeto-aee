@@ -3,6 +3,9 @@ package com.art.aee.relatorio;
 import com.art.aee.aluno.Aluno;
 import com.art.aee.aluno.AlunoRepository;
 import com.art.aee.exception.RecursoNaoEncontradoException;
+import com.art.aee.professor.Professor;
+import com.art.aee.turma.TurmaRepository;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,20 +24,28 @@ public class RelatorioController {
 
     private final RelatorioService relatorioService;
     private final AlunoRepository alunoRepository;
+    private final TurmaRepository turmaRepository;
 
-    public RelatorioController(RelatorioService relatorioService, AlunoRepository alunoRepository) {
+    public RelatorioController(RelatorioService relatorioService, AlunoRepository alunoRepository,
+                               TurmaRepository turmaRepository) {
         this.relatorioService = relatorioService;
         this.alunoRepository = alunoRepository;
+        this.turmaRepository = turmaRepository;
     }
 
     @PostMapping(path = "/{alunoId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<ByteArrayResource> gerarRelatorio(
+            @AuthenticationPrincipal Professor professor,
             @PathVariable UUID alunoId,
             @RequestParam(value = "inicio", required = false) LocalDateTime inicio,
             @RequestParam(value = "fim", required = false) LocalDateTime fim) {
 
         Aluno aluno = alunoRepository.findById(alunoId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Aluno não encontrado"));
+        if (professor.getEscolaId() == null ||
+                !turmaRepository.existsByIdAndEscolaId(aluno.getTurmaId(), professor.getEscolaId())) {
+            throw new RecursoNaoEncontradoException("Aluno não encontrado");
+        }
 
         byte[] pdf = relatorioService.gerarRelatorioAluno(alunoId, inicio, fim);
 

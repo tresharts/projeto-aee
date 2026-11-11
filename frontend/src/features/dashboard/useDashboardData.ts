@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ApiError } from '@/lib/api'
 import { mapApiPayloadToDashboard } from './dashboard.mappers'
-import { dashboardDemoData } from './dashboard.mock'
 import { getDashboardApiPayload } from './dashboard.service'
-import type { DashboardData, DashboardDataMode } from './dashboard.types'
+import type { DashboardData } from './dashboard.types'
 
 interface DashboardLoadState {
   status: 'loading' | 'ready' | 'error' | 'unauthorized'
@@ -11,22 +10,10 @@ interface DashboardLoadState {
   message?: string
 }
 
-const configuredMode: DashboardDataMode =
-  import.meta.env.VITE_DASHBOARD_DATA_MODE === 'api' ? 'api' : 'demo'
-
 export function useDashboardData() {
-  const [state, setState] = useState<DashboardLoadState>(() =>
-    configuredMode === 'demo'
-      ? { status: 'ready', data: dashboardDemoData }
-      : { status: 'loading', data: null },
-  )
+  const [state, setState] = useState<DashboardLoadState>({ status: 'loading', data: null })
 
   const load = useCallback(async () => {
-    if (configuredMode === 'demo') {
-      setState({ status: 'ready', data: dashboardDemoData })
-      return
-    }
-
     setState({ status: 'loading', data: null })
     try {
       const payload = await getDashboardApiPayload()
@@ -53,8 +40,8 @@ export function useDashboardData() {
   }, [])
 
   useEffect(() => {
-    if (configuredMode === 'api') void load()
+    void load()
   }, [load])
 
-  return { ...state, mode: configuredMode, retry: load }
+  return { ...state, mode: 'api' as const, retry: load }
 }

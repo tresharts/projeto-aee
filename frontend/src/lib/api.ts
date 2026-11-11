@@ -76,10 +76,11 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   return (await response.json()) as T
 }
 
-export async function apiFetchBlob(path: string) {
+export async function apiFetchBlob(path: string, init: RequestInit = {}) {
   const execute = (token: string | null) => fetch(`${API_BASE_URL}${path}`, {
+    ...init,
     credentials: 'include',
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    headers: token ? { ...Object.fromEntries(new Headers(init.headers)), Authorization: `Bearer ${token}` } : init.headers,
   })
   let response = await execute(accessToken)
   if (response.status === 401) {
