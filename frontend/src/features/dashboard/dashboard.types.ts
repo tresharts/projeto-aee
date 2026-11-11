@@ -15,12 +15,15 @@ export interface MetricItem {
 
 export interface Appointment {
   id: string
+  studentId?: string
+  sessionId?: string
+  sessionDateTime?: string
   time: string
   studentName: string
   schoolName: string
   tags: string[]
   avatarTone: 'blue' | 'yellow' | 'orange' | 'pink' | 'green'
-  status: 'Em andamento' | 'Aguardando' | 'Realizado'
+  status: 'Em andamento' | 'Aguardando' | 'Realizado' | 'Falta' | 'Cancelado'
 }
 
 export interface DashboardAlert {

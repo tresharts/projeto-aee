@@ -3,5 +3,10 @@ package com.art.aee.atendimento;
 public enum Humor {
     CALMO,
     AGITADO,
-    APATICO
+    APATICO,
+    FELIZ,
+    TRISTE,
+    DISPERSO,
+    IRRITADO,
+    OUTRO
 }

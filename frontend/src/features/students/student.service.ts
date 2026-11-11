@@ -17,6 +17,10 @@ export function getStudents(
   return apiFetch<SpringPage<Student>>(`/api/alunos?${params.toString()}`)
 }
 
+export function getStudent(id: string) {
+  return apiFetch<Student>(`/api/alunos/${id}`)
+}
+
 export async function getSchoolSetup() {
   const [classesPage, schoolPage] = await Promise.all([
     apiFetch<SpringPage<SchoolClass>>('/api/turmas?page=0&size=100&sort=nome,asc'),

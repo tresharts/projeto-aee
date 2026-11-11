@@ -1,5 +1,6 @@
 import { CalendarDays, Plus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { AgendaPanel } from './components/AgendaPanel'
 import { AlertsPanel } from './components/AlertsPanel'
@@ -17,16 +18,55 @@ import {
 import { formatDashboardDate } from '@/lib/date'
 import { dashboardDemoData } from './dashboard.mock'
 import { searchStudentsByName } from './dashboard.service'
-import type { ApiStudent } from './dashboard.types'
+import type { ApiStudent, Appointment } from './dashboard.types'
+import type { DashboardAlert } from './dashboard.types'
 import { useDashboardData } from './useDashboardData'
+import { getConsecutiveAbsenceAlerts, getScheduledSessions, type ScheduledSession } from '@/features/calendar/calendar.service'
 
 export function DashboardPage() {
+  const navigate = useNavigate()
   const { status, data, mode, message, retry } = useDashboardData()
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [notice, setNotice] = useState('')
+  const [todaySessions, setTodaySessions] = useState<ScheduledSession[] | null>(null)
+  const [absenceAlerts, setAbsenceAlerts] = useState<DashboardAlert[] | null>(null)
   const formattedDate = useMemo(() => formatDashboardDate(new Date()), [])
+  const todayKey = useMemo(() => {
+    const today = new Date()
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  }, [])
+
+  useEffect(() => {
+    void getScheduledSessions(todayKey, todayKey)
+      .then(setTodaySessions)
+      .catch(() => setTodaySessions([]))
+  }, [todayKey])
+
+  useEffect(() => {
+    void getConsecutiveAbsenceAlerts()
+      .then((alerts) => setAbsenceAlerts(alerts.map((alert) => ({
+        id: alert.alunoId,
+        studentName: alert.nomeAluno,
+        message: `${alert.quantidade} faltas consecutivas registradas`,
+        tone: 'lilac',
+      }))))
+      .catch(() => setAbsenceAlerts([]))
+  }, [])
+
+  const agendaAppointments: Appointment[] = todaySessions?.filter((session) => session.status !== 'CANCELADA').map((session, index) => ({
+    id: session.id,
+    sessionId: session.id,
+    studentId: session.alunoId,
+    sessionDateTime: session.dataHora,
+    time: session.dataHora.slice(11, 16),
+    studentName: session.nomeAluno,
+    schoolName: session.nomeEscola,
+    tags: [],
+    avatarTone: (['blue', 'yellow', 'orange', 'pink', 'green'] as const)[index % 5],
+    status: session.status === 'REALIZADA' ? 'Realizado' : session.status === 'FALTA' ? 'Falta' : session.status === 'CANCELADA' ? 'Cancelado' : 'Aguardando',
+  })) ?? data?.appointments ?? []
 
   useEffect(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
@@ -138,7 +178,10 @@ export function DashboardPage() {
                 <div className="widgets-column">
                   <MetricCards metrics={data.metrics} />
                   <div className="widgets-top">
-                    <AlertsPanel alerts={data.alerts} state={data.alertsState} />
+                  <AlertsPanel
+                    alerts={absenceAlerts ?? []}
+                    state={absenceAlerts === null ? 'pending' : absenceAlerts.length ? 'available' : 'empty'}
+                  />
                     <SchoolReturnsPanel
                       returns={data.schoolReturns}
                       state={data.schoolReturnsState}
@@ -151,9 +194,16 @@ export function DashboardPage() {
                 </div>
                 <div className="agenda-column">
                   <AgendaPanel
-                    appointments={data.appointments}
-                    state={data.agendaState}
-                    onUnavailable={showUnavailable}
+                    appointments={agendaAppointments}
+                    state={todaySessions === null ? 'pending' : agendaAppointments.length ? 'available' : 'empty'}
+                    onViewCalendar={() => navigate('/calendario')}
+                    onStartAttendance={(appointment) => {
+                      if (!appointment.studentId || !appointment.sessionId || !appointment.sessionDateTime) {
+                        navigate(`/calendario?data=${todayKey}`)
+                        return
+                      }
+                      navigate(`/registro-atendimento?alunoId=${encodeURIComponent(appointment.studentId)}&sessaoId=${encodeURIComponent(appointment.sessionId)}&dataHora=${encodeURIComponent(appointment.sessionDateTime)}`)
+                    }}
                   />
                   <PedagogicalPanel
                     indicator={data.indicator}

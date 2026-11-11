@@ -43,8 +43,44 @@ public class Atendimento {
     @Enumerated(EnumType.STRING)
     private Foco foco;
 
+    @Enumerated(EnumType.STRING)
+    private Participacao participacao;
+
+    @Enumerated(EnumType.STRING)
+    private Desenvolvimento desenvolvimento;
+
+    @Column(columnDefinition = "TEXT")
+    private String humorOutro;
+
+    @Column(columnDefinition = "TEXT")
+    private String atividadeRealizada;
+
+    @Column(columnDefinition = "TEXT")
+    private String recursosUtilizados;
+
+    @Column(columnDefinition = "TEXT")
+    private String habilidadesTrabalhadas;
+
     @Column(columnDefinition = "TEXT")
     private String observacoes;
+
+    @Column(columnDefinition = "TEXT")
+    private String estrategiasUtilizadas;
+
+    @Column(columnDefinition = "TEXT")
+    private String proximosPassos;
+
+    @Enumerated(EnumType.STRING)
+    private NivelEvolucao evolucaoParticipacao;
+
+    @Enumerated(EnumType.STRING)
+    private NivelEvolucao evolucaoComunicacao;
+
+    @Enumerated(EnumType.STRING)
+    private NivelEvolucao evolucaoAtencao;
+
+    @Enumerated(EnumType.STRING)
+    private NivelEvolucao evolucaoAutonomia;
 
     @NotNull(message = "A presença é obrigatória")
     @Column(nullable = false)

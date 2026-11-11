@@ -75,3 +75,18 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   if (response.status === 204) return undefined as T
   return (await response.json()) as T
 }
+
+export async function apiFetchBlob(path: string) {
+  const execute = (token: string | null) => fetch(`${API_BASE_URL}${path}`, {
+    credentials: 'include',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  })
+  let response = await execute(accessToken)
+  if (response.status === 401) {
+    const renewed = await refreshSession()
+    if (renewed) response = await execute(renewed.accessToken)
+    else window.dispatchEvent(new Event('aee:session-expired'))
+  }
+  if (!response.ok) throw new ApiError(await parseError(response), response.status)
+  return response.blob()
+}
