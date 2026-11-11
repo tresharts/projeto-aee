@@ -1,6 +1,6 @@
 package com.art.aee.auth;
 
-public record RefreshResponse(
-        String accessToken,
-        String refreshToken
-) {}
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public record RefreshResponse(String accessToken, @JsonIgnore String refreshToken,
+                              String name, String email, String role) {}

@@ -30,4 +30,12 @@ public class Professor {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'PENDING'")
+    @Builder.Default
+    private AccountStatus accountStatus = AccountStatus.PENDING;
+
+    @Column(name = "escola_id")
+    private UUID escolaId;
 }

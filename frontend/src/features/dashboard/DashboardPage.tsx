@@ -1,0 +1,238 @@
+import { CalendarDays, Plus } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/auth/useAuth'
+import { Button } from '@/components/ui/button'
+import { AgendaPanel } from './components/AgendaPanel'
+import { AlertsPanel } from './components/AlertsPanel'
+import { DashboardState } from './components/DashboardState'
+import { MetricCards } from './components/MetricCards'
+import { MotivationCard } from './components/MotivationCard'
+import { PedagogicalPanel } from './components/PedagogicalPanel'
+import { SchoolReturnsPanel } from './components/SchoolReturnsPanel'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { Sidebar } from '@/components/layout/Sidebar'
+import {
+  TopBar,
+  type SearchResult,
+} from '@/components/layout/TopBar'
+import { formatDashboardDate } from '@/lib/date'
+import { searchStudentsByName } from './dashboard.service'
+import type { ApiStudent, Appointment } from './dashboard.types'
+import type { DashboardAlert } from './dashboard.types'
+import { useDashboardData } from './useDashboardData'
+import { getConsecutiveAbsenceAlerts, getScheduledSessions, type ScheduledSession } from '@/features/calendar/calendar.service'
+
+function localDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+export function DashboardPage() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const { status, data, message, retry } = useDashboardData()
+  const [query, setQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searching, setSearching] = useState(false)
+  const [notice, setNotice] = useState('')
+  const [weekSessions, setWeekSessions] = useState<ScheduledSession[] | null>(null)
+  const [absenceAlerts, setAbsenceAlerts] = useState<DashboardAlert[] | null>(null)
+  const formattedDate = useMemo(() => formatDashboardDate(new Date()), [])
+  const todayKey = useMemo(() => localDateKey(new Date()), [])
+  const [selectedDateKey, setSelectedDateKey] = useState(todayKey)
+  const weekDays = useMemo(() => {
+    const monday = new Date(`${todayKey}T12:00:00`)
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7)
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
+    const fullFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
+    return labels.map((label, index) => {
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + index)
+      return {
+        key: localDateKey(date),
+        label,
+        date: String(date.getDate()).padStart(2, '0'),
+        fullLabel: fullFormatter.format(date),
+        today: localDateKey(date) === todayKey,
+      }
+    })
+  }, [todayKey])
+
+  useEffect(() => {
+    let active = true
+    void getScheduledSessions(weekDays[0].key, weekDays[6].key)
+      .then((sessions) => { if (active) setWeekSessions(sessions) })
+      .catch(() => { if (active) setWeekSessions([]) })
+    return () => { active = false }
+  }, [weekDays])
+
+  useEffect(() => {
+    void getConsecutiveAbsenceAlerts()
+      .then((alerts) => setAbsenceAlerts(alerts.map((alert) => ({
+        id: alert.alunoId,
+        studentName: alert.nomeAluno,
+        message: `${alert.quantidade} faltas consecutivas registradas`,
+        tone: 'lilac',
+      }))))
+      .catch(() => setAbsenceAlerts([]))
+  }, [])
+
+  const agendaAppointments: Appointment[] = weekSessions?.filter((session) =>
+    session.dataHora.slice(0, 10) === selectedDateKey && session.status !== 'CANCELADA',
+  ).map((session, index) => ({
+    id: session.id,
+    sessionId: session.id,
+    studentId: session.alunoId,
+    sessionDateTime: session.dataHora,
+    time: session.dataHora.slice(11, 16),
+    studentName: session.nomeAluno,
+    schoolName: session.nomeEscola,
+    tags: [],
+    avatarTone: (['blue', 'yellow', 'orange', 'pink', 'green'] as const)[index % 5],
+    status: session.status === 'REALIZADA' ? 'Realizado' : session.status === 'FALTA' ? 'Falta' : session.status === 'CANCELADA' ? 'Cancelado' : 'Aguardando',
+  })) ?? []
+
+  useEffect(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
+    if (normalizedQuery.length < 2) {
+      setSearchResults([])
+      setSearching(false)
+      return
+    }
+
+    let active = true
+    setSearching(true)
+    const timer = window.setTimeout(() => {
+      void searchStudentsByName(query.trim())
+        .then((page) => {
+          if (!active) return
+          setSearchResults(
+            page.content.map((student: ApiStudent) => ({
+              id: student.id,
+              name: student.nome,
+              detail: `${student.nomeEscola} • ${student.nomeTurma}`,
+            })),
+          )
+        })
+        .catch(() => {
+          if (active) setSearchResults([])
+        })
+        .finally(() => {
+          if (active) setSearching(false)
+        })
+    }, 280)
+
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
+  }, [query])
+
+  useEffect(() => {
+    if (!notice) return
+    const timer = window.setTimeout(() => setNotice(''), 3600)
+    return () => window.clearTimeout(timer)
+  }, [notice])
+
+  const showUnavailable = (feature: string) => {
+    setNotice(`${feature} estará disponível em breve.`)
+  }
+
+  return (
+    <div className="app-shell">
+      <Sidebar onUnavailable={showUnavailable} activePage="dashboard" />
+      <div className="workspace">
+        <TopBar
+          query={query}
+          results={searchResults}
+          searching={searching}
+          onQueryChange={setQuery}
+          onUnavailable={showUnavailable}
+          onResultSelect={(result) => navigate('/alunos/' + encodeURIComponent(result.id))}
+        />
+        <main className="dashboard-surface">
+          {status !== 'ready' || !data ? (
+            <DashboardState
+              status={status === 'ready' ? 'error' : status}
+              message={message}
+              onRetry={() => void retry()}
+            />
+          ) : (
+            <>
+              <div className="welcome-row">
+                <div className="welcome-copy">
+                  <h1 className="app-gradient-title">Olá, {user?.name ?? 'Professora'}!</h1>
+                  <p>É um prazer ter você aqui no AEE Conecta</p>
+                </div>
+                <div className="welcome-actions">
+                  <p className="current-date">
+                    <CalendarDays aria-hidden="true" />
+                    <time dateTime={new Date().toISOString().slice(0, 10)}>
+                      {formattedDate}
+                    </time>
+                  </p>
+                  <Button
+                    variant="ghost"
+                    className="register-button"
+                    type="button"
+                    onClick={() => navigate('/registro-atendimento')}
+                  >
+                    <Plus aria-hidden="true" />
+                    registrar atendimento avulso
+                  </Button>
+                </div>
+              </div>
+
+              <div className="dashboard-grid">
+                <div className="widgets-column">
+                  <MetricCards metrics={data.metrics} />
+                  <div className="widgets-top">
+                  <AlertsPanel
+                    alerts={absenceAlerts ?? []}
+                    state={absenceAlerts === null ? 'pending' : absenceAlerts.length ? 'available' : 'empty'}
+                  />
+                    <SchoolReturnsPanel
+                      returns={data.schoolReturns}
+                      state={data.schoolReturnsState}
+                      onViewAll={() => navigate('/retornos')}
+                    />
+                  </div>
+                  <div className="widgets-bottom">
+                    <MotivationCard />
+                  </div>
+                </div>
+                <div className="agenda-column">
+                  <AgendaPanel
+                    appointments={agendaAppointments}
+                    state={weekSessions === null ? 'pending' : agendaAppointments.length ? 'available' : 'empty'}
+                    days={weekDays}
+                    selectedDate={selectedDateKey}
+                    onSelectDate={setSelectedDateKey}
+                    onViewCalendar={() => navigate(`/calendario?data=${selectedDateKey}`)}
+                    onStartAttendance={(appointment) => {
+                      if (!appointment.studentId || !appointment.sessionId || !appointment.sessionDateTime) {
+                        navigate(`/calendario?data=${selectedDateKey}`)
+                        return
+                      }
+                      navigate(`/registro-atendimento?alunoId=${encodeURIComponent(appointment.studentId)}&sessaoId=${encodeURIComponent(appointment.sessionId)}&dataHora=${encodeURIComponent(appointment.sessionDateTime)}`)
+                    }}
+                  />
+                  <PedagogicalPanel
+                    indicator={data.indicator}
+                    state={data.indicatorState}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+      <BottomNavigation onUnavailable={showUnavailable} activePage="dashboard" />
+      {notice && (
+        <div className="availability-toast" role="status">
+          {notice}
+        </div>
+      )}
+    </div>
+  )
+}
