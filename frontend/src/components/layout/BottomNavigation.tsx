@@ -1,10 +1,10 @@
-import { CalendarRange, ClipboardList, House, Link2, UsersRound } from 'lucide-react'
+import { CalendarRange, ClipboardList, House, Link2, Settings, UsersRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 
 interface BottomNavigationProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar' | 'external-form'
+  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar' | 'external-form' | 'settings'
 }
 
 const items: { label: string; icon: typeof House; key: string; route?: string }[] = [
@@ -13,6 +13,7 @@ const items: { label: string; icon: typeof House; key: string; route?: string }[
   { label: 'Agenda', icon: CalendarRange, key: 'calendar', route: '/calendario' },
   { label: 'Registro', icon: ClipboardList, key: 'attendance', route: '/registro-atendimento' },
   { label: 'Formulário', icon: Link2, key: 'external-form', route: '/external-form/gerar' },
+  { label: 'Ajustes', icon: Settings, key: 'settings', route: '/configuracoes' },
 ]
 
 export function BottomNavigation({ onUnavailable, activePage = 'dashboard' }: BottomNavigationProps) {

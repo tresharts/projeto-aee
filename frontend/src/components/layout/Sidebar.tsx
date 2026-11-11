@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onUnavailable: (feature: string) => void
-  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar' | 'external-form'
+  activePage?: 'dashboard' | 'students' | 'attendance' | 'calendar' | 'external-form' | 'settings'
 }
 
 const navigation = [
@@ -21,7 +21,7 @@ const navigation = [
   { key: 'calendar', label: 'Calendário', icon: CalendarRange, route: '/calendario' },
   { key: 'attendance', label: 'Registro de Atendimento', icon: CalendarDays, route: '/registro-atendimento', multiline: true },
   { key: 'external-form', label: 'Formulário', icon: Link2, route: '/external-form/gerar' },
-  { key: 'settings', label: 'Configurações', icon: Settings },
+  { key: 'settings', label: 'Configurações', icon: Settings, route: '/configuracoes' },
 ]
 
 export function Sidebar({ onUnavailable, activePage = 'dashboard' }: SidebarProps) {

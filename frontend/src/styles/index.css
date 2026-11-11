@@ -2744,7 +2744,7 @@ input:focus-visible {
     left: 0;
     display: grid;
     height: 69px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     padding: 4px 9px max(4px, env(safe-area-inset-bottom));
     border-top: 1px solid #e3eafb;
     background: rgba(249, 251, 255, 0.96);

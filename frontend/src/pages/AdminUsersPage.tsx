@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Check, LogOut, RefreshCw, UsersRound } from 'lucide-react'
+import { Check, LogOut, RefreshCw, Settings, UsersRound } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/auth/useAuth'
 import { Button } from '@/components/ui/button'
 import { apiFetch, ApiError } from '@/lib/api'
@@ -61,7 +62,7 @@ export function AdminUsersPage() {
       <header className="border-b border-[#e5e9f2] bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3"><img src="/aee-conecta-logo.png" alt="AEE Conecta" className="h-10 w-16 object-contain" /><div><p className="font-semibold text-[#384777]">Coordenação AEE</p><p className="text-xs text-slate-500">{user?.name}</p></div></div>
-          <Button variant="outline" onClick={handleSignOut} className="gap-2"><LogOut className="h-4 w-4" />Sair</Button>
+          <div className="flex items-center gap-2"><Button asChild variant="outline" className="gap-2"><Link to="/configuracoes"><Settings className="h-4 w-4" />Configurações</Link></Button><Button variant="outline" onClick={handleSignOut} className="gap-2"><LogOut className="h-4 w-4" />Sair</Button></div>
         </div>
       </header>
       <section className="mx-auto max-w-5xl px-5 py-10">

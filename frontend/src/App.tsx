@@ -11,6 +11,7 @@ import { StudentsPage } from '@/features/students/StudentsPage'
 import { AttendanceRecordPage } from '@/features/attendance/AttendanceRecordPage'
 import { CalendarPage } from '@/features/calendar/CalendarPage'
 import { StudentProfilePage } from '@/features/students/StudentProfilePage'
+import { SettingsPage } from '@/pages/SettingsPage'
 
 function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: 'ADMIN' | 'PROFESSOR' }) {
   const { user, loading } = useAuth()
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/alunos" element={<ProtectedRoute><StudentsPage /></ProtectedRoute>} />
           <Route path="/alunos/:studentId" element={<ProtectedRoute><StudentProfilePage /></ProtectedRoute>} />
           <Route path="/registro-atendimento" element={<ProtectedRoute><AttendanceRecordPage /></ProtectedRoute>} />
+          <Route path="/configuracoes" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/" element={<HomeRedirect />} />
           <Route path="*" element={<HomeRedirect />} />
         </Routes>
