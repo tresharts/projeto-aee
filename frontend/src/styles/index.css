@@ -4413,6 +4413,10 @@ input:focus-visible {
     padding-bottom: calc(82px + env(safe-area-inset-bottom));
   }
 
+  .dashboard-grid { align-items: stretch; }
+  .agenda-column, .widgets-column, .widgets-top, .widgets-bottom,
+  .widgets-column > .metrics-grid { width: 100%; min-width: 0; }
+
   .dashboard-search-spacer { display: none; }
   .topbar--no-search { min-height: 72px; }
   .dashboard-search input { min-width: 0; font-size: 16px; }
@@ -4453,6 +4457,10 @@ input:focus-visible {
   .dashboard-surface { margin-right: 6px; margin-left: 6px; padding-right: 10px; padding-left: 10px; }
   .topbar { padding-right: 12px; padding-left: 12px; }
   .topbar-actions { flex-shrink: 0; }
+  .school-heading-row { flex-wrap: wrap; gap: 4px; }
+  .school-heading-row h2 { min-width: 0; white-space: normal; line-height: 1.2; }
+  .school-heading-row h2 span { flex: 0 0 auto; }
+  .school-heading-row > button { margin-left: auto; }
   .students-header-actions { flex-wrap: wrap; }
   .students-header-actions > button { flex-basis: calc(50% - 4px); }
   .bottom-navigation { padding-right: 2px; padding-left: 2px; }
