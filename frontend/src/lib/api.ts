@@ -1,4 +1,6 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+import { isDemoMode } from './demo-mode'
+import { demoBlob, demoRequest, getDemoSession } from './demo-api'
 
 export type SessionUser = { name: string; email: string; role: 'ADMIN' | 'PROFESSOR' }
 export type SessionPayload = { accessToken: string; name: string; email: string; role: SessionUser['role'] }
@@ -27,6 +29,7 @@ async function parseError(response: Response) {
 }
 
 export async function refreshSession() {
+  if (isDemoMode) return getDemoSession()
   if (!refreshRequest) {
     refreshRequest = fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
@@ -49,6 +52,10 @@ export async function refreshSession() {
 }
 
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  if (isDemoMode) {
+    try { return await demoRequest(path, init) as T }
+    catch (cause) { throw new ApiError(cause instanceof Error ? cause.message : 'Erro na demonstração.', 400) }
+  }
   const execute = (token: string | null) =>
     fetch(`${API_BASE_URL}${path}`, {
       ...init,
@@ -77,6 +84,10 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 }
 
 export async function apiFetchBlob(path: string, init: RequestInit = {}) {
+  if (isDemoMode) {
+    try { return await demoBlob(path) }
+    catch (cause) { throw new ApiError(cause instanceof Error ? cause.message : 'Arquivo indisponível.', 400) }
+  }
   const execute = (token: string | null) => fetch(`${API_BASE_URL}${path}`, {
     ...init,
     credentials: 'include',

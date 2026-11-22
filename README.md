@@ -1,5 +1,19 @@
 # AEE Conecta
 
+## Demonstração sem backend
+
+Para explorar os fluxos com dados fictícios, sem Docker nem Java:
+
+```text
+cd frontend
+npm ci
+npm run demo
+```
+
+Abra `http://localhost:5173` e escolha o perfil de professora ou coordenação na tela de login. O cadastro demonstrativo usa o código `AEEDEMO026`. As alterações ficam somente no navegador; o botão **Restaurar demonstração** retorna aos dados iniciais. Formulários gerados nesse modo funcionam apenas no mesmo navegador, inclusive em outra aba. Não use dados reais.
+
+Na Vercel, conecte o repositório com **Root Directory** `frontend`, **Build Command** `npm run build:demo` e **Output Directory** `dist`. O arquivo `frontend/vercel.json` permite abrir diretamente as rotas da aplicação. A versão publicada não precisa de variáveis de ambiente nem de backend.
+
 ## Rodar localmente
 
 Requisitos: Docker com Compose, Java 21, Node.js 20.19+ e npm. Execute os comandos a partir da raiz do repositório, exceto onde houver `cd`.

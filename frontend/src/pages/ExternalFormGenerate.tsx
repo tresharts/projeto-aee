@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { ClipboardList, Plus, Trash2 } from 'lucide-react'
 import { apiFetch } from '@/lib/api'
 import { gerarLink } from '@/lib/external-form.service'
+import { isDemoMode } from '@/lib/demo-mode'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -159,7 +160,7 @@ export function ExternalFormGenerate() {
           {linkGerado && (
             <section className="mt-6 rounded-2xl border border-[#dce6ff] bg-[#edf4ff] p-4" aria-live="polite">
               <h2 className="text-sm font-bold text-[#344875]">Link do formulário pronto</h2>
-              <p className="mt-1 text-xs text-[#737da6]">Compartilhe com o professor da escola regular. O link vale por 24 horas.</p>
+              <p className="mt-1 text-xs text-[#737da6]">{isDemoMode ? 'Abra em outra aba deste mesmo navegador para simular a resposta. O link não funciona em outro dispositivo.' : 'Compartilhe com o professor da escola regular. O link vale por 24 horas.'}</p>
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <input type="text" value={linkGerado} readOnly aria-label="Link gerado" className="min-w-0 flex-1 rounded-lg border border-[#d9e1f2] bg-white px-3 py-2 text-sm text-[#34477f] outline-none transition-[border-color,box-shadow] duration-200 ease-out focus:border-[#a94bea] focus:ring-2 focus:ring-[#b54ae8]/15" />
                 <Button variant="brand" type="button" onClick={handleCopiar} className="rounded-full bg-gradient-to-r from-[#0752a7] to-[#bb58df] font-semibold text-white">Copiar link</Button>

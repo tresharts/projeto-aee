@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { AuthShell } from '@/components/auth/AuthShell'
 import { useAuth } from '@/auth/useAuth'
 import { ApiError } from '@/lib/api'
+import { isDemoMode } from '@/lib/demo-mode'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -42,6 +43,13 @@ export function LoginPage() {
         <p className="mt-3 text-sm font-medium tracking-wide text-[#64738d] sm:text-base">SUA ROTINA DE INCLUSÃO COMEÇA AQUI</p>
       </div>
       {error && <div role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {isDemoMode && <div className="mb-5 rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-[#3b4d89]">
+        <p className="font-semibold">Escolha um perfil para explorar a demonstração</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={() => { void signIn('professora.demo@aee.local', 'demo').then(() => navigate('/dashboard')) }}>Entrar como professora</Button>
+          <Button type="button" variant="outline" onClick={() => { void signIn('coordenacao.demo@aee.local', 'demo').then(() => navigate('/admin/usuarios')) }}>Entrar como coordenação</Button>
+        </div>
+      </div>}
       <form onSubmit={handleSubmit} className="space-y-7">
         <div className="space-y-2.5">
           <Label htmlFor="login-email" className="text-xl font-semibold text-[#426294]">E-mail institucional</Label>

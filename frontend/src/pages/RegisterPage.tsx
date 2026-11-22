@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ApiError } from '@/lib/api'
 import { register } from '@/lib/auth.service'
+import { isDemoMode } from '@/lib/demo-mode'
 
 export function RegisterPage() {
   const [name, setName] = useState('')
@@ -73,7 +74,7 @@ export function RegisterPage() {
               <Label htmlFor="register-confirm" className="text-sm font-semibold text-[#426294]">Confirme a senha</Label>
               <Input id="register-confirm" type={showPassword ? 'text' : 'password'} required autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} placeholder="Digite a senha novamente" className="h-10 rounded-lg border-0 bg-[#eaf1fd]" />
             </div>
-            <p className="text-[11px] leading-relaxed text-[#6b7890]">Sua conta ficará pendente até a aprovação da coordenação da escola.</p>
+            <p className="text-[11px] leading-relaxed text-[#6b7890]">Sua conta ficará pendente até a aprovação da coordenação da escola.{isDemoMode && ' Na demonstração, use o código AEEDEMO026 e, após a aprovação, qualquer senha não vazia para entrar.'}</p>
             <Button type="submit" disabled={submitting} className="h-10 w-full rounded-full bg-gradient-to-r from-[#4b66eb] via-[#9d55d5] to-[#ec4db7] text-sm font-semibold text-white hover:brightness-105">{submitting ? 'Enviando…' : 'Solicitar acesso'}</Button>
           </form>
           <p className="mt-3 text-center text-sm text-[#475574]">Já possui conta? <Link to="/login" className="font-semibold underline">Entrar</Link></p>

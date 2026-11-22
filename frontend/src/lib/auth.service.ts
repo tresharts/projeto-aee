@@ -1,4 +1,6 @@
 import { ApiError, setApiAccessToken, type SessionPayload } from './api'
+import { isDemoMode } from './demo-mode'
+import { demoLogin, demoLogout, demoRegister } from './demo-api'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
@@ -22,6 +24,12 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
 }
 
 export async function login(email: string, password: string) {
+  if (isDemoMode) {
+    try {
+      const session = demoLogin(email, password)
+      return { name: session.name, email: session.email, role: session.role }
+    } catch (error) { throw new ApiError(error instanceof Error ? error.message : 'Não foi possível entrar.', 401) }
+  }
   const session = await request<SessionPayload>('/auth/login', { email, password })
   if (!session.accessToken) throw new ApiError('Resposta de autenticação inválida.', 500)
   setApiAccessToken(session.accessToken)
@@ -29,10 +37,15 @@ export async function login(email: string, password: string) {
 }
 
 export async function register(name: string, email: string, codigoEscola: string, password: string) {
+  if (isDemoMode) {
+    try { return demoRegister(name, email, codigoEscola) }
+    catch (error) { throw new ApiError(error instanceof Error ? error.message : 'Não foi possível cadastrar.', 400) }
+  }
   return request<{ message: string }>('/auth/register', { name, email, codigoEscola, password })
 }
 
 export async function logout() {
+  if (isDemoMode) { demoLogout(); return }
   try {
     await request<void>('/auth/logout')
   } finally {
