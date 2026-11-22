@@ -40,7 +40,7 @@ export function TopBar({
   }
 
   return (
-    <header className="topbar">
+    <header className={`topbar${showSearch ? '' : ' topbar--no-search'}`}>
       <div className="mobile-brand">
         <img src="/aee-conecta-logo.png" alt="AEE Conecta" />
       </div>

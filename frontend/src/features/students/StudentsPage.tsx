@@ -365,16 +365,16 @@ export function StudentsPage() {
               </div>
               </section>
               {loading ? <div className="students-loading"><LoaderCircle className="h-5 w-5 animate-spin" />Carregando alunos…</div> : students.length === 0 ? <div className="students-empty-list"><h3>{hasActiveFilters ? 'Nenhum aluno encontrado' : 'Ainda não há alunos cadastrados'}</h3><p>{hasActiveFilters ? 'Ajuste os filtros ou faça uma nova busca.' : 'Cadastre o primeiro aluno para começar a organizar os atendimentos.'}</p>{!hasActiveFilters && <Button onClick={openNewStudent} className="register-button mt-5 gap-2"><Plus aria-hidden="true" />Cadastrar aluno</Button>}</div> : (
-                <div className="overflow-x-auto">
+                <div className="students-table-scroll">
                   <table className="students-table">
                     <thead><tr><th>Aluno</th><th>Turma</th><th>Nascimento</th><th>Contato</th><th>Situação</th><th className="text-right">Ações</th></tr></thead>
                     <tbody>{students.map((student) => <tr key={student.id}>
-                      <td><button type="button" className="student-profile-row-link" onClick={() => navigate(`/alunos/${encodeURIComponent(student.id)}`)}><AvatarBadge name={student.nome} tone="blue" size="md" /><span><p className="student-row-name">{student.nome}</p><p className="student-row-school">{student.nomeEscola}</p></span></button></td>
-                      <td>{student.nomeTurma}</td>
-                      <td>{dateLabel(student.dataNascimento)}</td>
-                      <td>{student.telefone || student.email || '—'}</td>
-                      <td><span className={`student-status ${student.ativo ? 'is-active' : 'is-inactive'}`}>{student.ativo ? 'Ativo' : 'Inativo'}</span></td>
-                      <td><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Registrar atendimento de ${student.nome}`} aria-label={`Registrar atendimento de ${student.nome}`} onClick={() => navigate(`/registro-atendimento?alunoId=${encodeURIComponent(student.id)}`)} className="text-[#59689d] hover:bg-white/70"><ClipboardList className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={`Editar ${student.nome}`} aria-label={`Editar ${student.nome}`} onClick={() => openStudent(student)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={student.ativo ? 'Desativar cadastro' : 'Reativar cadastro'} aria-label={student.ativo ? `Desativar ${student.nome}` : `Reativar ${student.nome}`} disabled={changingStatus === student.id} onClick={() => void changeActive(student)} className="text-[#59689d] hover:bg-white/70">{student.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
+                      <td data-label="Aluno"><button type="button" className="student-profile-row-link" onClick={() => navigate(`/alunos/${encodeURIComponent(student.id)}`)}><AvatarBadge name={student.nome} tone="blue" size="md" /><span><p className="student-row-name">{student.nome}</p><p className="student-row-school">{student.nomeEscola}</p></span></button></td>
+                      <td data-label="Turma">{student.nomeTurma}</td>
+                      <td data-label="Nascimento">{dateLabel(student.dataNascimento)}</td>
+                      <td data-label="Contato">{student.telefone || student.email || '—'}</td>
+                      <td data-label="Situação"><span className={`student-status ${student.ativo ? 'is-active' : 'is-inactive'}`}>{student.ativo ? 'Ativo' : 'Inativo'}</span></td>
+                      <td data-label="Ações"><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Registrar atendimento de ${student.nome}`} aria-label={`Registrar atendimento de ${student.nome}`} onClick={() => navigate(`/registro-atendimento?alunoId=${encodeURIComponent(student.id)}`)} className="text-[#59689d] hover:bg-white/70"><ClipboardList className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={`Editar ${student.nome}`} aria-label={`Editar ${student.nome}`} onClick={() => openStudent(student)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={student.ativo ? 'Desativar cadastro' : 'Reativar cadastro'} aria-label={student.ativo ? `Desativar ${student.nome}` : `Reativar ${student.nome}`} disabled={changingStatus === student.id} onClick={() => void changeActive(student)} className="text-[#59689d] hover:bg-white/70">{student.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
                     </tr>)}</tbody>
                   </table>
                 </div>
@@ -414,15 +414,15 @@ export function StudentsPage() {
               ) : visibleClasses.length === 0 ? (
                 <div className="students-empty-list"><h3>Nenhuma turma encontrada</h3><p>Ajuste os filtros e tente novamente.</p></div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="students-table-scroll">
                   <table className="students-table">
                     <thead><tr><th>Turma</th><th>Ano letivo</th><th>Escola</th><th>Situação</th><th className="text-right">Ações</th></tr></thead>
                     <tbody>{visibleClasses.map((item) => <tr key={item.id}>
-                      <td><p className="student-row-name">{item.nome}</p></td>
-                      <td>{item.ano}</td>
-                      <td>{item.nomeEscola}</td>
-                      <td><span className={`student-status ${item.ativo ? 'is-active' : 'is-inactive'}`}>{item.ativo ? 'Ativa' : 'Inativa'}</span></td>
-                      <td><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Editar ${item.nome}`} aria-label={`Editar ${item.nome}`} onClick={() => openEditClass(item)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={`${item.ativo ? 'Desativar' : 'Reativar'} ${item.nome}`} aria-label={`${item.ativo ? 'Desativar' : 'Reativar'} ${item.nome}`} onClick={() => { setClassStatusError(null); setClassStatusConfirmation(item) }} className="text-[#59689d] hover:bg-white/70">{item.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
+                      <td data-label="Turma"><p className="student-row-name">{item.nome}</p></td>
+                      <td data-label="Ano letivo">{item.ano}</td>
+                      <td data-label="Escola">{item.nomeEscola}</td>
+                      <td data-label="Situação"><span className={`student-status ${item.ativo ? 'is-active' : 'is-inactive'}`}>{item.ativo ? 'Ativa' : 'Inativa'}</span></td>
+                      <td data-label="Ações"><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" title={`Editar ${item.nome}`} aria-label={`Editar ${item.nome}`} onClick={() => openEditClass(item)} className="text-[#59689d] hover:bg-white/70"><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" title={`${item.ativo ? 'Desativar' : 'Reativar'} ${item.nome}`} aria-label={`${item.ativo ? 'Desativar' : 'Reativar'} ${item.nome}`} onClick={() => { setClassStatusError(null); setClassStatusConfirmation(item) }} className="text-[#59689d] hover:bg-white/70">{item.ativo ? <UserRoundX className="h-4 w-4" /> : <UserRoundCheck className="h-4 w-4" />}</Button></div></td>
                     </tr>)}</tbody>
                   </table>
                 </div>

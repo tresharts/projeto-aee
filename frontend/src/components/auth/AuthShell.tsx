@@ -2,8 +2,8 @@ import { BarChart3, BookOpen, LockKeyhole, Pencil, UsersRound } from 'lucide-rea
 
 export function AuthShell({ children, compact = false }: { children: React.ReactNode; compact?: boolean }) {
   return (
-    <main className="min-h-screen bg-[#eaf1fd] p-0 md:p-7 lg:p-10">
-      <div className="mx-auto grid min-h-screen max-w-[1440px] overflow-hidden bg-white shadow-xl md:min-h-[calc(100vh-56px)] md:grid-cols-[0.95fr_1.05fr] lg:min-h-[calc(100vh-80px)]">
+    <main className="min-h-dvh bg-[#eaf1fd] p-0 md:p-7 lg:p-10">
+      <div className="mx-auto grid min-h-dvh max-w-[1440px] overflow-hidden bg-white shadow-xl md:min-h-[calc(100vh-56px)] md:grid-cols-[0.95fr_1.05fr] lg:min-h-[calc(100vh-80px)]">
         <aside className="relative hidden flex-col overflow-hidden bg-gradient-to-br from-[#c7d8f5] via-[#eedbf7] to-[#e8cdf3] md:flex">
           <div className="absolute -left-28 top-[48%] h-80 w-80 rounded-full bg-blue-300/35" />
           <div className="absolute -bottom-28 left-20 h-80 w-80 rounded-full bg-indigo-300/30" />
@@ -25,9 +25,9 @@ export function AuthShell({ children, compact = false }: { children: React.React
             <div className="flex items-center justify-center gap-2"><BarChart3 className="h-7 w-7 shrink-0" /><span>Evolução do<br />aluno</span></div>
           </div>
         </aside>
-        <section className={`relative flex min-h-screen items-center justify-center px-6 py-12 sm:px-12 md:min-h-0 md:px-14 lg:px-20 xl:px-24 ${compact ? 'md:py-5 lg:py-6' : ''}`}>
+        <section className={`relative flex min-h-dvh items-center justify-center px-5 py-7 sm:px-12 sm:py-12 md:min-h-0 md:px-14 lg:px-20 xl:px-24 ${compact ? 'md:py-5 lg:py-6' : ''}`}>
           <div className="w-full max-w-[500px]">
-            <div className="mb-8 flex justify-center md:hidden"><img src="/aee-conecta-logo.png" alt="AEE Conecta" className="w-48" /></div>
+            <div className="mb-6 flex justify-center md:hidden"><img src="/aee-conecta-logo.png" alt="AEE Conecta" className="w-40 sm:w-48" /></div>
             {children}
             <div className={`flex items-center justify-center gap-3 text-xs text-[#a5aec2] md:justify-start ${compact ? 'mt-5' : 'mt-14'}`}>
               <LockKeyhole className="h-6 w-6 shrink-0" />

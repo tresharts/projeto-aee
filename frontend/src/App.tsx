@@ -34,7 +34,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {isDemoMode && <div className="sticky top-0 z-[100] flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#233b86] px-4 py-2 text-center text-xs font-medium text-white sm:text-sm">
+        {isDemoMode && <div className="sticky top-0 z-30 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#233b86] px-4 py-2 text-center text-xs font-medium text-white sm:text-sm">
           <span>Ambiente de demonstração · use apenas dados fictícios · dados salvos neste navegador</span>
           <button type="button" className="font-bold underline underline-offset-2 hover:text-[#cfdcff]" onClick={() => { resetDemo(); window.location.assign('/login') }}>Restaurar demonstração</button>
         </div>}
